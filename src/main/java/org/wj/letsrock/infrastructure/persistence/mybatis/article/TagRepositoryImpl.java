@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;
 import org.wj.letsrock.domain.article.repository.TagRepository;
@@ -31,32 +32,16 @@ public class TagRepositoryImpl extends ServiceImpl<TagMapper, TagDO> implements 
      * @return
      */
     @Override
-    public List<TagDTO> listOnlineTag(String key, PageParam pageParam) {
+    public Page<TagDTO> pageOnlineTag(String key, PageParam pageParam) {
+        Page<TagDO> page = new Page<>(pageParam.getPageNum(), pageParam.getPageSize());
+
         LambdaQueryWrapper<TagDO> query = Wrappers.lambdaQuery();
         query.eq(TagDO::getStatus, PushStatusEnum.ONLINE.getCode())
                 .eq(TagDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .and(StringUtils.isNotBlank(key), v -> v.like(TagDO::getTagName, key))
                 .orderByDesc(TagDO::getId);
-        if (pageParam != null) {
-            query.last(PageParam.getLimitSql(pageParam));
-        }
-        List<TagDO> list = baseMapper.selectList(query);
-        return TagConverter.toDTOs(list);
-    }
-
-    /**
-     * 获取已上线 Tags 总数（分页）
-     *
-     * @return
-     */
-    @Override
-    public Integer countOnlineTag(String key) {
-        return lambdaQuery()
-                .eq(TagDO::getStatus, PushStatusEnum.ONLINE.getCode())
-                .eq(TagDO::getDeleted, YesOrNoEnum.NO.getCode())
-                .and(!StringUtils.isEmpty(key), v -> v.like(TagDO::getTagName, key))
-                .count()
-                .intValue();
+        Page<TagDO> pageResult = baseMapper.selectPage(page, query);
+        return TagConverter.toDTOPage(pageResult);
     }
     @Override
     public LambdaQueryChainWrapper<TagDO> createTagQuery(SearchTagParams params) {
@@ -85,4 +70,6 @@ public class TagRepositoryImpl extends ServiceImpl<TagMapper, TagDO> implements 
         return createTagQuery(params)
                 .count();
     }
+
+
 }

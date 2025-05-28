@@ -1,6 +1,7 @@
 package org.wj.letsrock.domain.article.repository;
 
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.wj.letsrock.domain.article.model.dto.TagDTO;
 import org.wj.letsrock.domain.article.model.entity.TagDO;
@@ -15,13 +16,15 @@ import java.util.List;
  * @createTime: 2025-05-23-16:53
  **/
 public interface TagRepository extends IService<TagDO> {
-    List<TagDTO> listOnlineTag(String key, PageParam pageParam);
 
-    Integer countOnlineTag(String key);
+
+
 
     LambdaQueryChainWrapper<TagDO> createTagQuery(SearchTagParams params);
 
     List<TagDO> listTag(SearchTagParams params);
 
     Long countTag(SearchTagParams params);
+
+    Page<TagDTO> pageOnlineTag(String key, PageParam pageParam);
 }

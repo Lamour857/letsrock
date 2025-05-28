@@ -1,5 +1,6 @@
 package org.wj.letsrock.domain.article.converter;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.wj.letsrock.domain.article.model.request.SearchTagReq;
 import org.wj.letsrock.domain.article.model.request.TagReq;
 import org.wj.letsrock.domain.article.model.dto.TagDTO;
@@ -58,5 +59,10 @@ public class TagConverter {
         searchTagParams.setTag( req.getTag() );
 
         return searchTagParams;
+    }
+
+    public static Page<TagDTO> toDTOPage(Page<TagDO> pageResult) {
+        return new Page<TagDTO>(pageResult.getCurrent(), pageResult.getSize(), pageResult.getTotal())
+                .setRecords(toDTOs(pageResult.getRecords()));
     }
 }

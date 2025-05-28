@@ -1,5 +1,6 @@
 package org.wj.letsrock.domain.article.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wj.letsrock.domain.article.repository.TagRepository;
@@ -22,8 +23,7 @@ public class TagServiceImpl implements TagService {
     private TagRepository tagDao;
     @Override
     public PageResultVo<TagDTO> queryTags(String key, PageParam pageParam) {
-        List<TagDTO> tagDTOs = tagDao.listOnlineTag(key, pageParam);
-        Integer totalCount = tagDao.countOnlineTag(key);
-        return PageResultVo.build(tagDTOs, pageParam.getPageSize(), pageParam.getPageNum(), totalCount);
+        Page<TagDTO> tagPage = tagDao.pageOnlineTag(key,pageParam);
+        return PageResultVo.build(tagPage.getRecords(),  pageParam.getPageSize(), pageParam.getPageNum(), tagPage.getTotal());
     }
 }
