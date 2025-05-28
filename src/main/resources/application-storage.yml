@@ -1,0 +1,37 @@
+spring:
+  redis:
+    host: localhost
+    port: 6379
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=500, expireAfterAccess=600s
+    # 或分缓存名称单独配置：
+#    cache-names: article, user
+#    caffeine:
+#      spec:
+#        article: maximumSize=1000, expireAfterWrite=1h
+#        user: maximumSize=500, expireAfterAccess=30m
+  datasource:
+    url: jdbc:mysql://localhost:3306/letsrock?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: GDragon@0223
+    driver-class-name: com.mysql.cj.jdbc.Driver
+# mybatis-plus
+mybatis-plus:
+  configuration:
+    use-actual-param-name: true
+# 图片存储相关配置
+image:
+  abs-tmp-path: /tmp/storage/
+  web-img-path: /letsrock/image/
+  tmp-upload-path: /tmp/letsrock/
+  cdn-host:
+  oss:
+    type: local
+    prefix: letsrock/
+    endpoint:
+    ak:
+    sk:
+    bucket:
+    host: https://cdn.tobebetterjavaer.com/

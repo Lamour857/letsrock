@@ -1,0 +1,48 @@
+server:
+  address: 127.0.0.1
+  port: 8080
+env:
+  name: dev
+spring:
+  config:
+    import: application-storage.yml
+  web:
+    resources:
+      static-locations: file:D://letsrock
+# knife4j url:http://127.0.0.1:8080/doc.html#/home
+knife4j:
+  enable: true
+  setting:
+    language: zh-CN
+  openapi:
+    title: letsrock
+    description: let's rock
+    version: 1.0.0
+    concat:
+    license: Apache License 2.0
+    license-url:
+    email: 1722699649@qq.com
+    group:
+      admin:
+        group-name: admin
+        api-rule: package
+        api-rule-resources:
+          - org.wj.letsrock.admin
+      front:
+        group-name: front
+        api-rule: package
+        api-rule-resources:
+          - org.wj.letsrock.front
+# 雪花算法配置
+snowflake:
+  datacenter-id: 1   # 数据中心ID（0~31）
+  worker-id: 1       # 机器ID（0~31）
+elasticsearch:
+  enabled: false
+jwt:
+  issuer: letsrock # 签发者
+  secret: theBestLetsrock # 签名密匙
+  expiration: 86400000 # jwt的有效期，默认1天
+
+
+

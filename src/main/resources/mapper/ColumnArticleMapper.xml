@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.wj.letsrock.infrastructure.persistence.mybatis.article.mapper.ColumnArticleMapper">
+
+    <sql id="limit">
+        <if test="pageParam != null">
+            limit #{pageParam.offset}, #{pageParam.limit}
+        </if>
+    </sql>
+
+    <select id="listColumnArticlesByColumnIdArticleName"
+            resultType="org.wj.letsrock.domain.article.model.dto.ColumnArticleDTO">
+        select c.id, c.article_id, a.title, a.short_title, c.column_id,
+        col.column_name as `column`, col.cover as column_cover,
+        c.`section` as sort, c.create_time
+        from column_article as c
+        left join article as a on c.article_id = a.id
+        left join column_info as col on c.column_id = col.id
+        where a.deleted = ${@org.wj.letsrock.enums.YesOrNoEnum@NO.code}
+        <if test="columnId != null and columnId != -1">
+            and c.column_id = #{columnId}
+        </if>
+        <if test="articleTitle != null and articleTitle != ''">
+            and a.short_title like concat('%', #{articleTitle}, '%')
+        </if>
+        order by c.section asc
+        <include refid="limit"/>
+    </select>
+    <select id="countColumnArticlesByColumnIdArticleName" resultType="java.lang.Long">
+        select count(1)
+        from column_article as c
+        left join article as a on c.article_id = a.id
+        left join column_info as col on c.column_id = col.id
+        where a.deleted = ${@org.wj.letsrock.enums.YesOrNoEnum@NO.code}
+        <if test="columnId != null and columnId != -1">
+            and c.column_id = #{columnId}
+        </if>
+        <if test="articleTitle != null and articleTitle != ''">
+            and a.short_title like concat('%', #{articleTitle}, '%')
+        </if>
+    </select>
+</mapper>
