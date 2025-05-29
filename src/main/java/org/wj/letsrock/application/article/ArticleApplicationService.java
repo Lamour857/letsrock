@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.wj.letsrock.domain.article.model.dto.*;
 import org.wj.letsrock.domain.article.model.entity.ArticleDO;
 import org.wj.letsrock.domain.article.model.request.ArticlePostReq;
@@ -136,6 +137,7 @@ public class ArticleApplicationService {
         return articleReadService.queryBasicArticle(articleId);
     }
 
+    @Transactional
     public Long saveArticle(ArticlePostReq req) {
 
         if (NumUtil.nullOrZero(req.getArticleId())) {
