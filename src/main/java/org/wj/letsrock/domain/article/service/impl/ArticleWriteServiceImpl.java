@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.wj.letsrock.domain.article.repository.ArticleRepository;
 import org.wj.letsrock.domain.article.repository.ArticleTagRepository;
-import org.wj.letsrock.infrastructure.persistence.mybatis.article.ArticleRepositoryImpl;
-import org.wj.letsrock.infrastructure.persistence.mybatis.article.ArticleTagRepositoryImpl;
 import org.wj.letsrock.infrastructure.context.RequestInfoContext;
 import org.wj.letsrock.enums.OperateTypeEnum;
 import org.wj.letsrock.enums.StatusEnum;
@@ -27,7 +25,6 @@ import org.wj.letsrock.domain.article.model.request.ArticlePostReq;
 import org.wj.letsrock.domain.article.service.ArticleWhiteListService;
 import org.wj.letsrock.domain.article.service.ArticleWriteService;
 import org.wj.letsrock.domain.article.service.ColumnSettingService;
-import org.wj.letsrock.domain.image.service.AbstractImageStorageService;
 import org.wj.letsrock.domain.user.model.entity.UserDO;
 import org.wj.letsrock.domain.user.service.UserFootService;
 

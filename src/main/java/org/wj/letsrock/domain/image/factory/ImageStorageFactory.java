@@ -5,6 +5,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.wj.letsrock.domain.image.service.ImageStorage;
 import org.wj.letsrock.infrastructure.config.properties.ImageProperties;
+import org.wj.letsrock.infrastructure.config.properties.OssProperties;
 
 @Component
 public class ImageStorageFactory {
@@ -14,9 +15,12 @@ public class ImageStorageFactory {
     
     @Autowired
     private ImageProperties imageProperties;
+
+    @Autowired
+    private OssProperties ossProperties;
     
     public ImageStorage getImageStorage() {
-        String type = imageProperties.getOss().getType();
+        String type = imageProperties.getType();
         switch(type.toLowerCase()) {
             case "local":
                 return context.getBean("localImageStorage", ImageStorage.class);

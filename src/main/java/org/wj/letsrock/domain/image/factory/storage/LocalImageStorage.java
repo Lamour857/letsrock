@@ -1,4 +1,4 @@
-package org.wj.letsrock.domain.image.service.impl;
+package org.wj.letsrock.domain.image.factory.storage;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

@@ -2,6 +2,7 @@ package org.wj.letsrock.infrastructure.config.properties;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -34,8 +35,7 @@ public class ImageProperties {
      * 访问图片的host
      */
     private String cdnHost;
-
-    private OssProperties oss;
+    private String type;
 
     public String buildImgUrl(String url) {
         if (!url.startsWith(cdnHost)) {

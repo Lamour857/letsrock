@@ -23,15 +23,16 @@ mybatis-plus:
     use-actual-param-name: true
 # 图片存储相关配置
 image:
+  type: local
   abs-tmp-path: /tmp/storage/
   web-img-path: /letsrock/image/
   tmp-upload-path: /tmp/letsrock/
   cdn-host:
-  oss:
-    type: local
-    prefix: letsrock/
-    endpoint:
-    ak:
-    sk:
-    bucket:
-    host: https://cdn.tobebetterjavaer.com/
+oss:
+  type: local
+  prefix: letsrock/
+  endpoint:
+  ak:
+  sk:
+  bucket:
+  host: https://cdn.tobebetterjavaer.com/
