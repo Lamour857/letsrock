@@ -239,8 +239,16 @@ public class RedisCache implements CacheService {
     }
 
     @Override
-    public boolean sIsMember(String articleWhiteList, Long userId) {
-        return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(generateKey(articleWhiteList), userId));
+    public boolean sIsMember(String key, Object value) {
+        try {
+            String jsonValue = objectMapper.writeValueAsString(value);
+            return Boolean.TRUE.equals(
+                    redisTemplate.opsForSet().isMember(generateKey(key), jsonValue)
+            );
+        } catch (JsonProcessingException e) {
+            log.error("JSON转换异常", e);
+            throw ExceptionUtil.of(StatusEnum.UNEXPECT_ERROR, "JSON转换异常");
+        }
     }
 
     @Override

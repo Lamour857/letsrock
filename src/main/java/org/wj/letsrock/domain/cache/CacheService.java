@@ -61,7 +61,7 @@ public interface CacheService {
 
     Boolean acquire(String lockKey);
 
-    boolean sIsMember(String articleWhiteList, Long userId);
+    boolean sIsMember(String key, Object userId);
 
     Boolean tryAcquire(String key, int seconds);
 

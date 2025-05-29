@@ -176,7 +176,7 @@ public class MultiLevelCache implements CacheService {
     }
 
     @Override
-    public boolean sIsMember(String setKey, Long userId) {
+    public boolean sIsMember(String setKey, Object userId) {
         // 直接查询远程缓存
         return remoteCache.sIsMember(setKey, userId);
     }

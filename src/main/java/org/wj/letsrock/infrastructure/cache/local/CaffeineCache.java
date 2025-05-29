@@ -113,7 +113,7 @@ public class CaffeineCache implements CacheService {
     }
 
     @Override
-    public boolean sIsMember(String articleWhiteList, Long userId) {
+    public boolean sIsMember(String articleWhiteList, Object userId) {
         throw new UnsupportedOperationException("Caffeine cache does not support set operations");
     }
 
