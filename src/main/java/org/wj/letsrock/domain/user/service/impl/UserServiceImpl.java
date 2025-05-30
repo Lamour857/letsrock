@@ -6,9 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.wj.letsrock.domain.user.converter.UserConverter;
+import org.wj.letsrock.domain.user.model.dto.UserStatisticInfoDTO;
+import org.wj.letsrock.domain.user.model.entity.UserDO;
+import org.wj.letsrock.domain.user.model.entity.UserRelationDO;
 import org.wj.letsrock.domain.user.repository.UserRepository;
 import org.wj.letsrock.domain.user.service.UserService;
 import org.wj.letsrock.enums.StatusEnum;
+import org.wj.letsrock.infrastructure.context.RequestInfoContext;
+import org.wj.letsrock.utils.DateUtil;
 import org.wj.letsrock.utils.ExceptionUtil;
 import org.wj.letsrock.domain.user.model.dto.BaseUserInfoDTO;
 import org.wj.letsrock.domain.user.model.dto.SimpleUserInfoDTO;
@@ -18,6 +23,7 @@ import org.wj.letsrock.domain.user.model.request.UserInfoSaveReq;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -79,6 +85,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserInfoDO getByUserId(Long userId) {
         return userDao.getByUserId(userId);
+    }
+
+    @Override
+    public Long getJoinDayCount(Long userId) {
+        UserDO user=null;
+        if(!Objects.equals(userId, RequestInfoContext.getReqInfo().getUserId())){
+            user=userDao.getUserByUserId(userId);
+        }else{
+            user=RequestInfoContext.getReqInfo().getUser();
+        }
+
+        return DateUtil.calculateDaysSince(user.getCreateTime());
     }
 
     @Override

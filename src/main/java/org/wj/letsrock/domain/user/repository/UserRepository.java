@@ -29,4 +29,8 @@ public interface UserRepository extends IService <UserInfoDO> {
     List<UserInfoDO> getByUserNameLike(String userName);
 
     UserDO getUserByPrinciple(String principle);
+
+
+
+    UserDO getUserByUserId(Long userId);
 }

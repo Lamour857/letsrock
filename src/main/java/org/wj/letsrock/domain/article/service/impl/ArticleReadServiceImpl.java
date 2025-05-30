@@ -9,8 +9,6 @@ import org.wj.letsrock.domain.article.model.dto.ArticleDTO;
 import org.wj.letsrock.domain.article.model.dto.CategoryDTO;
 import org.wj.letsrock.domain.article.repository.ArticleRepository;
 import org.wj.letsrock.domain.article.repository.ArticleTagRepository;
-import org.wj.letsrock.infrastructure.persistence.mybatis.article.ArticleRepositoryImpl;
-import org.wj.letsrock.infrastructure.persistence.mybatis.article.ArticleTagRepositoryImpl;
 import org.wj.letsrock.enums.HomeSelectEnum;
 import org.wj.letsrock.enums.StatusEnum;
 import org.wj.letsrock.utils.ArticleUtil;
@@ -220,7 +218,7 @@ public class ArticleReadServiceImpl implements ArticleReadService {
         // 作者信息
         BaseUserInfoDTO author = userService.queryBasicUserInfo(dto.getAuthor());
         dto.setAuthorName(author.getUserName());
-        dto.setAuthorAvatar(author.getPhoto());
+        dto.setAuthorAvatar(author.getAvatar());
         return dto;
     }
 }

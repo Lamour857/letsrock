@@ -7,8 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.wj.letsrock.application.image.ImageService;
+import org.wj.letsrock.domain.article.service.ArticleReadService;
 import org.wj.letsrock.domain.user.model.dto.*;
 import org.wj.letsrock.domain.user.model.entity.UserInfoDO;
+import org.wj.letsrock.domain.user.model.entity.UserRelationDO;
 import org.wj.letsrock.domain.user.model.request.UserInfoSaveReq;
 import org.wj.letsrock.domain.user.model.request.UserRelationReq;
 import org.wj.letsrock.domain.user.service.UserActivityRankService;
@@ -43,6 +45,8 @@ public class UserApplicationService {
     private UserService userService;
     @Autowired
     private ImageService imageService;
+    @Autowired
+    private ArticleReadService articleReadService;
     public RankInfoDTO queryUserRank(String time) {
         ActivityRankTimeEnum rankTime = ActivityRankTimeEnum.nameOf(time);
         if (rankTime == null) {
@@ -108,5 +112,34 @@ public class UserApplicationService {
         }else{
             userService.saveAvatar(userInfoDO, imageUrl);
         }
+    }
+
+    public BaseUserInfoDTO queryUserInfo(Long userId) {
+        return userService.queryBasicUserInfo(userId);
+    }
+
+    public UserStatisticInfoDTO queryUserStatisticInfo(Long userId) {
+        UserStatisticInfoDTO userStatisticInfoDTO = new UserStatisticInfoDTO();
+        if(userId==null){
+            userId = RequestInfoContext.getReqInfo().getUserId();
+        }
+        List<UserRelationDO> relationList = userRelationService.getRelatedRelations(userId);
+        int followCount = 0;
+        int fansCount = 0;
+        if(relationList!=null){
+            for(UserRelationDO relationDO:relationList){
+                if(Objects.equals(relationDO.getUserId(), userId)){
+                    followCount++;
+                }
+                if(Objects.equals(relationDO.getFollowUserId(), userId)){
+                    fansCount++;
+                }
+            }
+        }
+        userStatisticInfoDTO.setFollowCount(followCount);
+        userStatisticInfoDTO.setFansCount(fansCount);
+        userStatisticInfoDTO.setArticleCount(articleReadService.getArticleCount());
+        userStatisticInfoDTO.setJoinDayCount(userService.getJoinDayCount(userId));
+        return userStatisticInfoDTO;
     }
 }

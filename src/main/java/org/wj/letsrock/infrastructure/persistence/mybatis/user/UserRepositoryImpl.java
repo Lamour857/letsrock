@@ -32,6 +32,14 @@ public class UserRepositoryImpl extends ServiceImpl<UserInfoMapper, UserInfoDO> 
                 .eq(UserInfoDO::getDeleted, YesOrNoEnum.NO.getCode());
         return baseMapper.selectOne(query);
     }
+    @Override
+    public UserDO getUserByUserId(Long userId) {
+        LambdaQueryWrapper<UserDO> query = Wrappers.lambdaQuery();
+        query.eq(UserDO::getId, userId)
+                .eq(UserDO::getDeleted, YesOrNoEnum.NO.getCode());
+        return userMapper.selectOne(query);
+
+    }
 
     @Override
     public List<UserInfoDO> getByUserIds(Collection<Long> userIds) {
@@ -106,4 +114,6 @@ public class UserRepositoryImpl extends ServiceImpl<UserInfoMapper, UserInfoDO> 
                 .eq(UserDO::getDeleted, YesOrNoEnum.NO.getCode());
         return userMapper.selectOne(wrapper);
     }
+
+
 }

@@ -31,12 +31,12 @@ public class UserStatisticInfoDTO extends BaseUserInfoDTO{
     /**
      * 加入天数
      */
-    private Integer joinDayCount;
+    private Long joinDayCount;
 
     /**
      * 已发布文章数
      */
-    private Integer articleCount;
+    private Long articleCount;
 
     /**
      * 文章点赞数

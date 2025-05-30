@@ -21,4 +21,6 @@ public interface UserRelationRepository extends IService<UserRelationDO> {
     List<FollowUserInfoDTO> listUserFollows(Long followUserId, PageParam pageParam);
 
     List<FollowUserInfoDTO> listUserFans(Long userId, PageParam pageParam);
+
+    List<UserRelationDO> getRelatedRelations(Long userId);
 }

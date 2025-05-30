@@ -126,7 +126,7 @@ public class CommentReadServiceImpl implements CommentReadService {
             }
         } else {
             comment.setUserName(userInfoDO.getUserName());
-            comment.setUserPhoto(userInfoDO.getPhoto());
+            comment.setUserPhoto(userInfoDO.getAvatar());
             if (comment instanceof TopCommentDTO) {
                 ((TopCommentDTO) comment).setCommentCount(((TopCommentDTO) comment).getChildComments().size());
             }

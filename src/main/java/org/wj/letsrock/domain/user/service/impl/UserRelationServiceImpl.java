@@ -129,4 +129,9 @@ public class UserRelationServiceImpl implements UserRelationService {
     public boolean isFallowed(Long author, Long userId) {
         return userRelationDao.getUserRelationRecord(author, userId) != null;
     }
+
+    @Override
+    public List<UserRelationDO> getRelatedRelations(Long userId) {
+        return userRelationDao.getRelatedRelations(userId);
+    }
 }

@@ -2,9 +2,12 @@ package org.wj.letsrock.utils;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 /**
  * @author wujia
@@ -63,5 +66,17 @@ public class DateUtil {
     public static String format(DateTimeFormatter format, long timestamp) {
         LocalDateTime time = time2LocalTime(timestamp);
         return format.format(time);
+    }
+    public static long calculateDaysSince(Date createTime) {
+        // 1. 将Date转换为LocalDate（忽略时间部分）
+        LocalDate createDate = createTime.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        // 2. 获取当前日期（系统默认时区）
+        LocalDate currentDate = LocalDate.now();
+
+        // 3. 计算天数差
+        return ChronoUnit.DAYS.between(createDate, currentDate);
     }
 }

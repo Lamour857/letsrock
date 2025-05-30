@@ -11,7 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.wj.letsrock.application.article.ArticleApplicationService;
 import org.wj.letsrock.application.image.ImageService;
 import org.wj.letsrock.application.user.UserApplicationService;
+import org.wj.letsrock.domain.user.model.dto.BaseUserInfoDTO;
 import org.wj.letsrock.domain.user.model.dto.SearchUserDTO;
+import org.wj.letsrock.domain.user.model.dto.UserStatisticInfoDTO;
 import org.wj.letsrock.domain.user.model.entity.UserDO;
 import org.wj.letsrock.infrastructure.context.RequestInfoContext;
 import org.wj.letsrock.enums.FollowTypeEnum;
@@ -140,8 +142,8 @@ public class UserController {
 
     @ApiOperation("获取当前登录用户信息")
     @GetMapping("info")
-    public ResultVo<UserDO> info() {
-        UserDO user =((AuthenticationToken) SecurityContextHolder.getContext().getAuthentication()).getUser();
+    public ResultVo<BaseUserInfoDTO> info() {
+        BaseUserInfoDTO user = userService.queryUserInfo(RequestInfoContext.getReqInfo().getUserId());
         return ResultVo.ok(user);
     }
 
@@ -150,6 +152,13 @@ public class UserController {
     public ResultVo<SearchUserDTO> queryUserList(@RequestParam(name = "key", required = false) String key) {
 
         SearchUserDTO vo = userService.queryUserList(key);
+        return ResultVo.ok(vo);
+    }
+
+    @ApiOperation("用户基本数据")
+    @GetMapping(path = "statistic")
+    public ResultVo<UserStatisticInfoDTO> queryUserStatisticInfo(@RequestParam(name = "userId" ,required = false) Long userId) {
+        UserStatisticInfoDTO vo = userService.queryUserStatisticInfo(userId);
         return ResultVo.ok(vo);
     }
 }

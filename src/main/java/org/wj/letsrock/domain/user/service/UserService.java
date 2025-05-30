@@ -48,4 +48,6 @@ public interface UserService {
 
 
     UserInfoDO getByUserId(Long userId);
+
+    Long getJoinDayCount(Long userId);
 }

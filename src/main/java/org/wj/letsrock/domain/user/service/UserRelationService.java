@@ -1,5 +1,6 @@
 package org.wj.letsrock.domain.user.service;
 
+import org.wj.letsrock.domain.user.model.entity.UserRelationDO;
 import org.wj.letsrock.model.vo.PageListVo;
 import org.wj.letsrock.model.vo.PageParam;
 import org.wj.letsrock.domain.user.model.dto.FollowUserInfoDTO;
@@ -34,4 +35,6 @@ public interface UserRelationService {
     void updateUserFollowRelationId(PageListVo<FollowUserInfoDTO> followList, Long loginUserId);
 
     boolean isFallowed(Long author, Long userId);
+
+    List<UserRelationDO> getRelatedRelations(Long userId);
 }

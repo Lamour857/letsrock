@@ -1,5 +1,6 @@
 package org.wj.letsrock.infrastructure.persistence.mybatis.user;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;
@@ -61,5 +62,17 @@ public class UserRelationRepositoryImpl extends ServiceImpl<UserRelationMapper, 
     @Override
     public List<FollowUserInfoDTO> listUserFans(Long userId, PageParam pageParam) {
         return baseMapper.queryUserFansList(userId, pageParam);
+    }
+
+    @Override
+    public List<UserRelationDO> getRelatedRelations(Long userId) {
+        LambdaQueryWrapper<UserRelationDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.and(wrapper -> wrapper
+                        .eq(UserRelationDO::getUserId, userId)
+                        .or()
+                        .eq(UserRelationDO::getFollowUserId, userId)
+                ) // 嵌套 OR 条件：UserId 或 followUserId 等于 userId
+                .eq(UserRelationDO::getFollowState, 1); // 添加 AND 条件：followState 必须为 1
+        return baseMapper.selectList(queryWrapper);
     }
 }

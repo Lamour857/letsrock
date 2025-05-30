@@ -35,7 +35,7 @@ public class BaseUserInfoDTO extends BaseDTO {
      * 用户图像
      */
     @ApiModelProperty(value = "用户头像")
-    private String photo;
+    private String avatar;
     /**
      * 个人简介
      */

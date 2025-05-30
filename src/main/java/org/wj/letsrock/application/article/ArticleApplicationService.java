@@ -11,7 +11,6 @@ import org.wj.letsrock.domain.article.model.request.ArticlePostReq;
 import org.wj.letsrock.domain.article.model.request.SearchArticleReq;
 import org.wj.letsrock.domain.article.service.*;
 import org.wj.letsrock.domain.user.model.dto.BaseUserInfoDTO;
-import org.wj.letsrock.domain.user.model.dto.UserStatisticInfoDTO;
 import org.wj.letsrock.domain.user.model.entity.UserFootDO;
 import org.wj.letsrock.domain.user.service.UserFootService;
 import org.wj.letsrock.domain.user.service.UserRelationService;
@@ -77,7 +76,7 @@ public class ArticleApplicationService {
 
         BaseUserInfoDTO user = userService.queryBasicUserInfo(articleDTO.getAuthor());
         articleDTO.setAuthorName(user.getUserName());
-        articleDTO.setAuthorAvatar(user.getPhoto());
+        articleDTO.setAuthorAvatar(user.getAvatar());
 
         boolean isFollowed = userRelationService.isFallowed(articleDTO.getAuthor(), RequestInfoContext.getReqInfo().getUserId());
         articleDetail.setIsFollowed(isFollowed);
