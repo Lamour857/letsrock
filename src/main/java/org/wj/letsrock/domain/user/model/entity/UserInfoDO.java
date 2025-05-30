@@ -32,7 +32,7 @@ public class UserInfoDO extends BaseDO {
     /**
      * 用户图像
      */
-    private String photo;
+    private String avatar;
 
     /**
      * 个人简介

@@ -3,6 +3,7 @@ package org.wj.letsrock.domain.user.service;
 import org.wj.letsrock.domain.user.model.dto.BaseUserInfoDTO;
 import org.wj.letsrock.domain.user.model.dto.SimpleUserInfoDTO;
 import org.wj.letsrock.domain.user.model.dto.UserStatisticInfoDTO;
+import org.wj.letsrock.domain.user.model.entity.UserInfoDO;
 import org.wj.letsrock.domain.user.model.request.UserInfoSaveReq;
 
 import java.util.Collection;
@@ -24,6 +25,8 @@ public interface UserService {
      */
     List<SimpleUserInfoDTO> batchQuerySimpleUserInfo(Collection<Long> userIds);
 
+    void saveAvatar(UserInfoDO user, String imageUrl);
+
     void saveUserInfo(UserInfoSaveReq req);
 
     /**
@@ -44,4 +47,5 @@ public interface UserService {
     List<SimpleUserInfoDTO> searchUser(String key);
 
 
+    UserInfoDO getByUserId(Long userId);
 }

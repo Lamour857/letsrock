@@ -1,9 +1,14 @@
 package org.wj.letsrock.application.user;
 
+import io.netty.util.internal.StringUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.wj.letsrock.application.image.ImageService;
 import org.wj.letsrock.domain.user.model.dto.*;
+import org.wj.letsrock.domain.user.model.entity.UserInfoDO;
 import org.wj.letsrock.domain.user.model.request.UserInfoSaveReq;
 import org.wj.letsrock.domain.user.model.request.UserRelationReq;
 import org.wj.letsrock.domain.user.service.UserActivityRankService;
@@ -18,6 +23,7 @@ import org.wj.letsrock.model.vo.PageParam;
 import org.wj.letsrock.model.vo.ResultVo;
 import org.wj.letsrock.utils.ExceptionUtil;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,6 +33,7 @@ import java.util.Objects;
  * @createTime: 2025-05-22-22:24
  **/
 @Service
+@Slf4j
 public class UserApplicationService {
     @Autowired
     private UserActivityRankService userActivityRankService;
@@ -34,6 +41,8 @@ public class UserApplicationService {
     private UserRelationService userRelationService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ImageService imageService;
     public RankInfoDTO queryUserRank(String time) {
         ActivityRankTimeEnum rankTime = ActivityRankTimeEnum.nameOf(time);
         if (rankTime == null) {
@@ -78,5 +87,26 @@ public class UserApplicationService {
         searchUserDTO.setKey(key);
         searchUserDTO.setItems(list);
         return searchUserDTO;
+    }
+    @Transactional
+    public void saveAvatar(String imageUrl) {
+        UserInfoDO userInfoDO = userService.getByUserId(RequestInfoContext.getReqInfo().getUserId());
+        String avatar=userInfoDO.getAvatar();
+        log.info("用户:{} 保存头像，原头像为：{}",userInfoDO.getUserName(),avatar);
+        if(StringUtil.isNullOrEmpty(avatar)){
+            // 原头像为空
+            userService.saveAvatar(userInfoDO, imageUrl);
+            return;
+        }
+        if(imageService.isImageExist(avatar)){
+            // 原头像不为空且存在
+            try {
+                imageService.deleteImage(avatar);
+            } catch (IOException e) {
+                log.warn("删除图片失败",e);
+            }
+        }else{
+            userService.saveAvatar(userInfoDO, imageUrl);
+        }
     }
 }

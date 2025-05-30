@@ -16,4 +16,6 @@ public interface ImageService {
     String saveImg(MultipartFile file);
 
     boolean isImageExist(String fileName);
+
+    void deleteImage(String avatar) throws IOException;
 }

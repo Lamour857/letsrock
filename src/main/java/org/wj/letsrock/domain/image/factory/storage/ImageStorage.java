@@ -1,4 +1,4 @@
-package org.wj.letsrock.domain.image.service;
+package org.wj.letsrock.domain.image.factory.storage;
 
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;

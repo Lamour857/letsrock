@@ -3,7 +3,6 @@ package org.wj.letsrock.domain.image.factory.storage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.wj.letsrock.domain.image.service.ImageStorage;
 import org.wj.letsrock.utils.ImageUtil;
 
 import java.io.IOException;

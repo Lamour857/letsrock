@@ -1,10 +1,11 @@
 package org.wj.letsrock.domain.user.service.impl;
 
+import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.wj.letsrock.domain.user.converter.UserConverter;
-import org.wj.letsrock.domain.user.model.dto.UserStatisticInfoDTO;
 import org.wj.letsrock.domain.user.repository.UserRepository;
 import org.wj.letsrock.domain.user.service.UserService;
 import org.wj.letsrock.enums.StatusEnum;
@@ -13,7 +14,6 @@ import org.wj.letsrock.domain.user.model.dto.BaseUserInfoDTO;
 import org.wj.letsrock.domain.user.model.dto.SimpleUserInfoDTO;
 import org.wj.letsrock.domain.user.model.entity.UserInfoDO;
 import org.wj.letsrock.domain.user.model.request.UserInfoSaveReq;
-import org.wj.letsrock.infrastructure.persistence.mybatis.user.UserRepositoryImpl;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -70,13 +70,22 @@ public class UserServiceImpl implements UserService {
         return users.stream().map(s -> new SimpleUserInfoDTO()
                         .setUserId(s.getUserId())
                         .setName(s.getUserName())
-                        .setAvatar(s.getPhoto())
+                        .setAvatar(s.getAvatar())
                         .setProfile(s.getProfile())
                 )
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public UserInfoDO getByUserId(Long userId) {
+        return userDao.getByUserId(userId);
+    }
 
+    @Override
+    public void saveAvatar(UserInfoDO user, String imageUrl) {
+        user.setAvatar(imageUrl);
+        userDao.updateById(user);
+    }
 
 
     @Override

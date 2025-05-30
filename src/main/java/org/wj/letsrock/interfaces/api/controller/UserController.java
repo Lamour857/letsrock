@@ -3,10 +3,13 @@ package org.wj.letsrock.interfaces.api.controller;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.wj.letsrock.application.article.ArticleApplicationService;
+import org.wj.letsrock.application.image.ImageService;
 import org.wj.letsrock.application.user.UserApplicationService;
 import org.wj.letsrock.domain.user.model.dto.SearchUserDTO;
 import org.wj.letsrock.domain.user.model.entity.UserDO;
@@ -26,6 +29,8 @@ import org.wj.letsrock.domain.user.model.request.UserRelationReq;
 import org.wj.letsrock.domain.user.service.UserRelationService;
 import org.wj.letsrock.domain.user.service.UserService;
 import org.wj.letsrock.utils.ExceptionUtil;
+import org.wj.letsrock.utils.ImageUtil;
+import org.wj.letsrock.utils.StopWatchUtil;
 
 import java.util.Objects;
 
@@ -43,6 +48,8 @@ public class UserController {
     private UserApplicationService userService;
     @Autowired
     private ArticleApplicationService articleService;
+    @Autowired
+    private ImageService imageService;
     /**
      * 保存用户关系
      *
@@ -57,6 +64,23 @@ public class UserController {
         }
         userService.saveUserRelation(req);
         return ResultVo.ok(true);
+    }
+    @PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResultVo<String> uploadImage(  @RequestParam("file") MultipartFile file){
+        StopWatchUtil stopWatch = new StopWatchUtil("上传图片");
+        stopWatch.start("参数校验");
+        if (file.isEmpty()) {
+            throw ExceptionUtil.of(StatusEnum.UPLOAD_PIC_FAILED, "图片文件为空");
+        }
+        ImageUtil.validateImageFile(file);
+        stopWatch.stop();
+
+        stopWatch.start("保存图片");
+        String imageUrl= imageService.saveImg(file);
+        userService.saveAvatar(imageUrl);
+        stopWatch.stop();
+        stopWatch.prettyPrint();
+        return ResultVo.ok(imageUrl);
     }
     /**
      * 保存用户详情

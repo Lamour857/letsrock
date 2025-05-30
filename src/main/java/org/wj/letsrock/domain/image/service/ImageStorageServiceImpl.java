@@ -1,4 +1,4 @@
-package org.wj.letsrock.domain.image.service.impl;
+package org.wj.letsrock.domain.image.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -8,7 +8,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.wj.letsrock.application.image.ImageService;
 import org.wj.letsrock.domain.image.factory.ImageStorageFactory;
-import org.wj.letsrock.domain.image.service.ImageTransferService;
 import org.wj.letsrock.infrastructure.log.mdc.MdcDot;
 import org.wj.letsrock.utils.MdImgLoader;
 
@@ -47,6 +46,11 @@ public class ImageStorageServiceImpl implements ImageService {
     @Override
     public boolean isImageExist(String url) {
         return imageStorageFactory.getImageStorage().exists(url);
+    }
+
+    @Override
+    public void deleteImage(String avatar) throws IOException {
+        imageStorageFactory.getImageStorage().delete(avatar);
     }
 
     @Override

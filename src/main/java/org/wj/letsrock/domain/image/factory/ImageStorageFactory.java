@@ -3,7 +3,7 @@ package org.wj.letsrock.domain.image.factory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import org.wj.letsrock.domain.image.service.ImageStorage;
+import org.wj.letsrock.domain.image.factory.storage.ImageStorage;
 import org.wj.letsrock.infrastructure.config.properties.ImageProperties;
 import org.wj.letsrock.infrastructure.config.properties.OssProperties;
 

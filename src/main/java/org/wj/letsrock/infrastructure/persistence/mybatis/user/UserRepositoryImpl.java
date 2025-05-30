@@ -46,8 +46,8 @@ public class UserRepositoryImpl extends ServiceImpl<UserInfoMapper, UserInfoDO> 
         if (record.equals(user)) {
             return;
         }
-        if (StringUtils.isEmpty(user.getPhoto())) {
-            user.setPhoto(null);
+        if (StringUtils.isEmpty(user.getAvatar())) {
+            user.setAvatar(null);
         }
         if (StringUtils.isEmpty(user.getUserName())) {
             user.setUserName(null);
@@ -88,7 +88,7 @@ public class UserRepositoryImpl extends ServiceImpl<UserInfoMapper, UserInfoDO> 
     @Override
     public List<UserInfoDO> getByUserNameLike(String userName) {
         LambdaQueryWrapper<UserInfoDO> query = Wrappers.lambdaQuery();
-        query.select(UserInfoDO::getUserId, UserInfoDO::getUserName, UserInfoDO::getPhoto, UserInfoDO::getProfile)
+        query.select(UserInfoDO::getUserId, UserInfoDO::getUserName, UserInfoDO::getAvatar, UserInfoDO::getProfile)
                 .and(!StringUtils.isEmpty(userName),
                         v -> v.like(UserInfoDO::getUserName, userName)
                 )

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.wj.letsrock.application.image.ImageService;
 import org.wj.letsrock.domain.article.repository.ArticleRepository;
 import org.wj.letsrock.domain.article.repository.ArticleTagRepository;
 import org.wj.letsrock.infrastructure.context.RequestInfoContext;
@@ -42,7 +43,7 @@ import java.util.Set;
 @Slf4j
 public class ArticleWriteServiceImpl implements ArticleWriteService {
     @Autowired
-    private AbstractImageStorageService imageService;
+    private ImageService imageService;
     @Autowired
     private ArticleRepository articleDao;
     @Autowired
