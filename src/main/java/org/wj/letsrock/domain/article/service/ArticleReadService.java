@@ -67,4 +67,6 @@ public interface ArticleReadService {
      * @return
      */
     Long getArticleCount();
+
+    PageListVo<ArticleDTO> queryLatestArticles(PageParam pageParam);
 }

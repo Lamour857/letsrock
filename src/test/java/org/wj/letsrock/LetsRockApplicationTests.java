@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.wj.letsrock.application.image.ImageService;
+import org.wj.letsrock.domain.article.model.dto.ArticleDTO;
+import org.wj.letsrock.domain.article.service.ArticleReadService;
+import org.wj.letsrock.model.vo.PageListVo;
+import org.wj.letsrock.model.vo.PageParam;
 
 @SpringBootTest
 @Slf4j
@@ -17,6 +21,8 @@ class LetsRockApplicationTests {
 	private RabbitTemplate rabbitTemplate;
 	@Autowired
 	private PasswordEncoder  passwordEncoder;
+	@Autowired
+	private ArticleReadService articleReadService;
 
 	@Test
 	void testisExistImage() {
@@ -44,6 +50,15 @@ class LetsRockApplicationTests {
 	@Test
 	void testGeneratePassword(){
 		log.info(passwordEncoder.encode("guest"));
+	}
+
+	@Test
+	 void testGetLatestArticles(){
+		PageListVo<ArticleDTO> articleDTOListVo = articleReadService.queryLatestArticles(PageParam.newPageInstance(1L, 10L));
+		for(ArticleDTO articleDTO : articleDTOListVo.getList()){
+			log.info("{}",articleDTO);
+		}
+
 	}
 
 

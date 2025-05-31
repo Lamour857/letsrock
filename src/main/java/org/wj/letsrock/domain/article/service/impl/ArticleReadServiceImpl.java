@@ -1,5 +1,6 @@
 package org.wj.letsrock.domain.article.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,6 +63,11 @@ public class ArticleReadServiceImpl implements ArticleReadService {
         List<ArticleDO> records = articleDao.listArticlesByCategoryId(categoryId, page);
         return buildArticleListVo(records, page.getPageSize());
     }
+    @Override
+    public PageListVo<ArticleDTO> queryLatestArticles(PageParam pageParam) {
+        Page<ArticleDO> records = articleDao.listLatestArticles(pageParam);
+        return buildArticleListVo(records.getRecords(), pageParam.getPageSize());
+    }
 
     @Override
     public List<SimpleArticleDTO> querySimpleArticleBySearchKey(String key) {
@@ -107,6 +113,8 @@ public class ArticleReadServiceImpl implements ArticleReadService {
     public Long getArticleCount() {
         return articleDao.countArticle();
     }
+
+
 
     /**
      * fixme 排序逻辑

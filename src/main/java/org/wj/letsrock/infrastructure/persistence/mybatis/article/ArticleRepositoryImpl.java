@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -279,5 +280,16 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
         ArticleDO article = baseMapper.selectById(articleId);
         article.setPraise(article.getPraise() - 1);
         baseMapper.updateById(article);
+    }
+
+    @Override
+    public Page<ArticleDO> listLatestArticles(PageParam pageParam) {
+        Page<ArticleDO> page = new Page<>(pageParam.getPageNum(), pageParam.getPageSize());
+        LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
+
+        query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
+                .eq(ArticleDO::getStatus, PushStatusEnum.ONLINE.getCode())
+                .orderByDesc(ArticleDO::getCreateTime);
+        return baseMapper.selectPage(page, query);
     }
 }

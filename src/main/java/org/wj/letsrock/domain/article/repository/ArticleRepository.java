@@ -1,5 +1,6 @@
 package org.wj.letsrock.domain.article.repository;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.wj.letsrock.domain.article.model.dto.ArticleAdminDTO;
 import org.wj.letsrock.domain.article.model.dto.ArticleDTO;
@@ -50,4 +51,6 @@ public interface ArticleRepository extends IService<ArticleDO> {
     void incrementPraiseCount(Long articleId);
 
     void decrementPraiseCount(Long articleId);
+
+    Page<ArticleDO> listLatestArticles(PageParam pageParam);
 }

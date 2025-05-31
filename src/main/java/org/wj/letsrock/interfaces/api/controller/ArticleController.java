@@ -51,6 +51,14 @@ public class ArticleController extends BaseController {
         PageListVo<ArticleDTO> list = articleService.queryArticlesByCategory(categoryId, pageParam);
         return ResultVo.ok(list);
     }
+
+     @GetMapping(path = "list/latest")
+     public  ResultVo<PageListVo<ArticleDTO>> latestDataList(@RequestParam(name = "page") Long page,
+                                                             @RequestParam(name = "size", required = false) Long size) {
+        PageParam pageParam = buildPageParam(page, size);
+        PageListVo<ArticleDTO> list = articleService.queryLatestArticles(pageParam);
+        return ResultVo.ok(list);
+    }
     /**
      * 标签下的文章列表
      *

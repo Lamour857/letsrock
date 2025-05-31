@@ -183,4 +183,8 @@ public class ArticleApplicationService {
     public PageResultVo<ArticleAdminDTO> getArticleList(SearchArticleReq req) {
         return articleSettingService.getArticleList(req);
     }
+
+    public PageListVo<ArticleDTO> queryLatestArticles(PageParam pageParam) {
+        return articleReadService.queryLatestArticles(pageParam);
+    }
 }
