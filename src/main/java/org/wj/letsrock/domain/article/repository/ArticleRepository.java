@@ -40,7 +40,7 @@ public interface ArticleRepository extends IService<ArticleDO> {
 
     Page<ArticleDO> listArticlesBySearchKey(String key, PageParam pageParam);
 
-    List<ArticleDO> listArticlesByUserId(Long userId, PageParam pageParam);
+    Page<ArticleDO> listArticlesByUserId(Long userId, PageParam pageParam);
 
     List<ArticleAdminDTO> listArticlesByParams(SearchArticleParams params);
 

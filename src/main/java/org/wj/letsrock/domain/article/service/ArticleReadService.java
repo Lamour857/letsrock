@@ -52,15 +52,15 @@ public interface ArticleReadService {
      */
     PageResultVo<ArticleDTO> queryArticlesBySearchKey(String key, PageParam page);
 
-//    /** todo
-//     * 查询用户的文章列表
-//     *
-//     * @param userId 用户编号
-//     * @param pageParam 页参数
-//     * @param select 选择类型
-//     * @return
-//     */
-//    PageResultVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select);
+    /** todo
+     * 查询用户的文章列表
+     *
+     * @param userId 用户编号
+     * @param pageParam 页参数
+     * @param select 选择类型
+     * @return
+     */
+    PageResultVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select);
     /**
      * 返回总的文章计数
      *

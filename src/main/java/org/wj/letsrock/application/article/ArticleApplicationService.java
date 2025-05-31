@@ -164,9 +164,9 @@ public class ArticleApplicationService {
         return articleReadService.queryArticlesBySearchKey(key, pageParam);
     }
 // todo 优化HomeSelectEnum中获取的文章
-//    public PageResultVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select) {
-//        return articleReadService.queryArticlesByUserAndType(userId, pageParam, select);
-//    }
+    public PageResultVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select) {
+        return articleReadService.queryArticlesByUserAndType(userId, pageParam, select);
+    }
 
     public void updateArticle(ArticlePostReq req) {
         articleSettingService.updateArticle(req);

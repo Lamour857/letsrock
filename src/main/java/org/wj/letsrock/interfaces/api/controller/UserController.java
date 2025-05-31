@@ -22,6 +22,7 @@ import org.wj.letsrock.enums.StatusEnum;
 import org.wj.letsrock.infrastructure.security.token.AuthenticationToken;
 import org.wj.letsrock.model.vo.PageListVo;
 import org.wj.letsrock.model.vo.PageParam;
+import org.wj.letsrock.model.vo.PageResultVo;
 import org.wj.letsrock.model.vo.ResultVo;
 import org.wj.letsrock.domain.article.model.dto.ArticleDTO;
 import org.wj.letsrock.domain.article.service.ArticleReadService;
@@ -109,22 +110,22 @@ public class UserController {
      * @param homeSelectType
      * @return
      */
-//    @GetMapping(path = "article")
-//    public ResultVo<PageListVo<ArticleDTO>> articleList(@RequestParam(name = "userId") Long userId,
-//                                             @RequestParam(name = "homeSelectType") String homeSelectType,
-//                                             @RequestParam("page") Long page,
-//                                             @RequestParam(name = "pageSize", required = false) Long pageSize) {
-//        HomeSelectEnum select = HomeSelectEnum.fromCode(homeSelectType);
-//        if (select == null) {
-//            return ResultVo.fail(StatusEnum.ILLEGAL_ARGUMENTS);
-//        }
-//
-//        if (pageSize == null) pageSize = PageParam.DEFAULT_PAGE_SIZE;
-//        PageParam pageParam = PageParam.newPageInstance(page, pageSize);
-//        PageListVo<ArticleDTO> dto = articleService.queryArticlesByUserAndType(userId, pageParam, select);
-//
-//        return ResultVo.ok(dto);
-//    }
+    @GetMapping(path = "article")
+    public ResultVo<PageResultVo<ArticleDTO>> articleList(@RequestParam(name = "userId") Long userId,
+                                             @RequestParam(name = "homeSelectType") String homeSelectType,
+                                             @RequestParam("page") Long page,
+                                             @RequestParam(name = "pageSize", required = false) Long pageSize) {
+        HomeSelectEnum select = HomeSelectEnum.fromCode(homeSelectType);
+        if (select == null) {
+            return ResultVo.fail(StatusEnum.ILLEGAL_ARGUMENTS);
+        }
+
+        if (pageSize == null) pageSize = PageParam.DEFAULT_PAGE_SIZE;
+        PageParam pageParam = PageParam.newPageInstance(page, pageSize);
+        PageResultVo<ArticleDTO> dto = articleService.queryArticlesByUserAndType(userId, pageParam, select);
+
+        return ResultVo.ok(dto);
+    }
 
     /**
      * 获取用户关注列表

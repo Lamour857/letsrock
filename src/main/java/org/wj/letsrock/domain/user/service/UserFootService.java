@@ -1,5 +1,6 @@
 package org.wj.letsrock.domain.user.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.wj.letsrock.enums.article.DocumentTypeEnum;
 import org.wj.letsrock.enums.OperateTypeEnum;
 import org.wj.letsrock.model.vo.PageParam;
@@ -74,7 +75,7 @@ public interface UserFootService {
      * @param pageParam 页参数
      * @return
      */
-    List<Long> queryUserReadArticleList(Long userId, PageParam pageParam);
+    Page<UserFootDO> queryUserReadArticleList(Long userId, PageParam pageParam);
     /**
      * 查询收藏文章列表
      *
@@ -82,7 +83,7 @@ public interface UserFootService {
      * @param pageParam 页参数
      * @return
      */
-    List<Long> queryUserCollectionArticleList(Long userId, PageParam pageParam);
+    Page<UserFootDO> queryUserCollectionArticleList(Long userId, PageParam pageParam);
 
     UserFootStatisticDTO getFootCount();
 }

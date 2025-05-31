@@ -234,7 +234,8 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
         return baseMapper.selectPage(page, query);
     }
     @Override
-    public List<ArticleDO> listArticlesByUserId(Long userId, PageParam pageParam) {
+    public Page<ArticleDO> listArticlesByUserId(Long userId, PageParam pageParam) {
+        Page<ArticleDO> page = new Page<>(pageParam.getPageNum(), pageParam.getPageSize());
         LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
         query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .eq(ArticleDO::getUserId, userId)
@@ -244,7 +245,7 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
             // 作者本人，可以查看草稿、审核、上线文章；其他用户，只能查看上线的文章
             query.eq(ArticleDO::getStatus, PushStatusEnum.ONLINE.getCode());
         }
-        return baseMapper.selectList(query);
+        return baseMapper.selectPage(page, query);
     }
 
     /**

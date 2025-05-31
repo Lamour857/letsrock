@@ -1,5 +1,6 @@
 package org.wj.letsrock.domain.user.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wj.letsrock.domain.user.repository.UserFootRepository;
@@ -49,12 +50,12 @@ public class UserFootServiceImpl implements UserFootService {
     }
 
     @Override
-    public List<Long> queryUserReadArticleList(Long userId, PageParam pageParam) {
+    public Page<UserFootDO> queryUserReadArticleList(Long userId, PageParam pageParam) {
         return userFootDao.listReadArticleByUserId(userId, pageParam);
     }
 
     @Override
-    public List<Long> queryUserCollectionArticleList(Long userId, PageParam pageParam) {
+    public Page<UserFootDO> queryUserCollectionArticleList(Long userId, PageParam pageParam) {
         return userFootDao.listCollectedArticlesByUserId(userId, pageParam);
     }
 

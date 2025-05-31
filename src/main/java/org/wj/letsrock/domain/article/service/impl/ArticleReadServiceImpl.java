@@ -95,29 +95,30 @@ public class ArticleReadServiceImpl implements ArticleReadService {
         return Collections.emptyList();
     }
 
-//    @Override todo 优化这个逻辑
-//    public PageResultVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select) {
-//        List<ArticleDO> records = null;
-//        if (select == HomeSelectEnum.ARTICLE) {
-//            // 用户的文章列表
-//            records = articleDao.listArticlesByUserId(userId, pageParam);
-//        } else if (select == HomeSelectEnum.READ) {
-//            // 用户的阅读记录
-//            List<Long> articleIds = userFootService.queryUserReadArticleList(userId, pageParam);
-//            records = CollectionUtils.isEmpty(articleIds) ? Collections.emptyList() : articleDao.listByIds(articleIds);
-//            records = sortByIds(articleIds, records);
-//        } else if (select == HomeSelectEnum.COLLECTION) {
-//            // 用户的收藏列表
-//            List<Long> articleIds = userFootService.queryUserCollectionArticleList(userId, pageParam);
-//            records = CollectionUtils.isEmpty(articleIds) ? Collections.emptyList() : articleDao.listByIds(articleIds);
-//            records = sortByIds(articleIds, records);
-//        }
-//
-//        if (CollectionUtils.isEmpty(records)) {
-//            return PageListVo.emptyVo();
-//        }
-//        return buildArticleListVo(records, pageParam.getPageSize());
-//    }
+    @Override
+    public PageResultVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select) {
+        Page<ArticleDO> records = new Page<>();
+        if (select == HomeSelectEnum.ARTICLE) {
+            // 用户的文章列表
+            records = articleDao.listArticlesByUserId(userId, pageParam);
+        } else if (select == HomeSelectEnum.READ) {
+            // 用户的阅读记录
+            Page<UserFootDO> userFootDOs = userFootService.queryUserReadArticleList(userId, pageParam);
+            records.setRecords(CollectionUtils.isEmpty(userFootDOs.getRecords()) ? Collections.emptyList() :
+                    articleDao.listByIds(userFootDOs.getRecords().stream().map( UserFootDO::getDocumentId).collect(Collectors.toList())));
+        } else if (select == HomeSelectEnum.COLLECTION) {
+            // 用户的收藏列表
+            Page<UserFootDO> userFootDOs = userFootService.queryUserCollectionArticleList(userId, pageParam);
+            records.setRecords(CollectionUtils.isEmpty(userFootDOs.getRecords()) ? Collections.emptyList() :
+                    articleDao.listByIds(userFootDOs.getRecords().stream().map( UserFootDO::getDocumentId).collect(Collectors.toList())));
+        }
+
+        if (CollectionUtils.isEmpty(records.getRecords())) {
+            return new PageResultVo<>(Collections.emptyList(), records.getPages(), records.getTotal(), pageParam.getPageSize());
+        }
+        List <ArticleDTO> result = records.getRecords().stream().map(this::fillArticleRelatedInfo).collect(Collectors.toList());
+        return PageResultVo.build(result, records.getPages(), records.getTotal(), pageParam.getPageSize());
+    }
 
     @Override
     public Long getArticleCount() {
