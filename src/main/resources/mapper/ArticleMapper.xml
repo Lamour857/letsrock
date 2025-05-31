@@ -55,7 +55,7 @@
         select a.id as article_id, a.title, a.short_title, a.offical_stat,
         a.topping_stat, a.status, a.cream_stat, a.picture as cover,
         a.update_time,
-        u.user_id as author, u.user_name as author_name,u.photo as author_avatar
+        u.user_id as author, u.user_name as author_name,u.avatar as author_avatar
         from article a
         left join user_info u on a.user_id = u.user_id
         <include refid="articlesByParams"/>
