@@ -66,6 +66,9 @@ public class ArticleDO extends BaseDO implements Serializable {
     @ApiModelProperty(value = "点赞数")
     private Integer praise;
 
+     @ApiModelProperty(value = "阅读数")
+     private Integer readCount;
+
     @ApiModelProperty(value = "收藏数")
     private Integer collection;
 

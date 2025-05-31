@@ -12,6 +12,7 @@ import org.wj.letsrock.domain.article.repository.ArticleRepository;
 import org.wj.letsrock.domain.article.repository.ArticleTagRepository;
 import org.wj.letsrock.enums.HomeSelectEnum;
 import org.wj.letsrock.enums.StatusEnum;
+import org.wj.letsrock.model.vo.PageResultVo;
 import org.wj.letsrock.utils.ArticleUtil;
 import org.wj.letsrock.model.vo.PageListVo;
 import org.wj.letsrock.model.vo.PageParam;
@@ -59,14 +60,23 @@ public class ArticleReadServiceImpl implements ArticleReadService {
     private Boolean esEnabled;
 
     @Override
-    public PageListVo<ArticleDTO> queryArticlesByCategory(Long categoryId, PageParam page) {
-        List<ArticleDO> records = articleDao.listArticlesByCategoryId(categoryId, page);
-        return buildArticleListVo(records, page.getPageSize());
+    public PageResultVo<ArticleDTO> queryArticlesByCategory(Long categoryId, PageParam page) {
+        Page<ArticleDO> records = articleDao.listArticlesByCategoryId(categoryId, page);
+         List<ArticleDTO> result = records.getRecords().stream().map(this::fillArticleRelatedInfo).collect(Collectors.toList());
+        return PageResultVo.build(result, records.getPages(), records.getTotal(), page.getPageSize());
     }
     @Override
-    public PageListVo<ArticleDTO> queryLatestArticles(PageParam pageParam) {
+    public PageResultVo<ArticleDTO> queryLatestArticles(PageParam pageParam) {
         Page<ArticleDO> records = articleDao.listLatestArticles(pageParam);
-        return buildArticleListVo(records.getRecords(), pageParam.getPageSize());
+         List<ArticleDTO> result = records.getRecords().stream().map(this::fillArticleRelatedInfo).collect(Collectors.toList());
+        return PageResultVo.build(result, records.getPages(), records.getTotal(), pageParam.getPageSize());
+    }
+
+    @Override
+    public PageResultVo<ArticleDTO> queryHotArticles(PageParam pageParam) {
+        Page< ArticleDO> records = articleDao.listHotArticles(pageParam);
+        List<ArticleDTO> result = records.getRecords().stream().map(this::fillArticleRelatedInfo).collect(Collectors.toList());
+         return PageResultVo.build(result, records.getPages(), records.getTotal(), pageParam.getPageSize());
     }
 
     @Override
@@ -85,29 +95,29 @@ public class ArticleReadServiceImpl implements ArticleReadService {
         return Collections.emptyList();
     }
 
-    @Override
-    public PageListVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select) {
-        List<ArticleDO> records = null;
-        if (select == HomeSelectEnum.ARTICLE) {
-            // 用户的文章列表
-            records = articleDao.listArticlesByUserId(userId, pageParam);
-        } else if (select == HomeSelectEnum.READ) {
-            // 用户的阅读记录
-            List<Long> articleIds = userFootService.queryUserReadArticleList(userId, pageParam);
-            records = CollectionUtils.isEmpty(articleIds) ? Collections.emptyList() : articleDao.listByIds(articleIds);
-            records = sortByIds(articleIds, records);
-        } else if (select == HomeSelectEnum.COLLECTION) {
-            // 用户的收藏列表
-            List<Long> articleIds = userFootService.queryUserCollectionArticleList(userId, pageParam);
-            records = CollectionUtils.isEmpty(articleIds) ? Collections.emptyList() : articleDao.listByIds(articleIds);
-            records = sortByIds(articleIds, records);
-        }
-
-        if (CollectionUtils.isEmpty(records)) {
-            return PageListVo.emptyVo();
-        }
-        return buildArticleListVo(records, pageParam.getPageSize());
-    }
+//    @Override todo 优化这个逻辑
+//    public PageResultVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select) {
+//        List<ArticleDO> records = null;
+//        if (select == HomeSelectEnum.ARTICLE) {
+//            // 用户的文章列表
+//            records = articleDao.listArticlesByUserId(userId, pageParam);
+//        } else if (select == HomeSelectEnum.READ) {
+//            // 用户的阅读记录
+//            List<Long> articleIds = userFootService.queryUserReadArticleList(userId, pageParam);
+//            records = CollectionUtils.isEmpty(articleIds) ? Collections.emptyList() : articleDao.listByIds(articleIds);
+//            records = sortByIds(articleIds, records);
+//        } else if (select == HomeSelectEnum.COLLECTION) {
+//            // 用户的收藏列表
+//            List<Long> articleIds = userFootService.queryUserCollectionArticleList(userId, pageParam);
+//            records = CollectionUtils.isEmpty(articleIds) ? Collections.emptyList() : articleDao.listByIds(articleIds);
+//            records = sortByIds(articleIds, records);
+//        }
+//
+//        if (CollectionUtils.isEmpty(records)) {
+//            return PageListVo.emptyVo();
+//        }
+//        return buildArticleListVo(records, pageParam.getPageSize());
+//    }
 
     @Override
     public Long getArticleCount() {
@@ -134,23 +144,18 @@ public class ArticleReadServiceImpl implements ArticleReadService {
         return articleDOS;
     }
 
-
     @Override
-    public PageListVo<ArticleDTO> buildArticleListVo(List<ArticleDO> records, long pageSize) {
-        List<ArticleDTO> result = records.stream().map(this::fillArticleRelatedInfo).collect(Collectors.toList());
-        return PageListVo.newVo(result, pageSize);
+    public PageResultVo<ArticleDTO> queryArticlesBySearchKey(String key, PageParam page) {
+        Page<ArticleDO> records = articleDao.listArticlesBySearchKey(key, page);
+         List<ArticleDTO> result = records.getRecords().stream().map(this::fillArticleRelatedInfo).collect(Collectors.toList());
+         return PageResultVo.build(result, records.getPages(), records.getTotal(), page.getPageSize());
     }
 
     @Override
-    public PageListVo<ArticleDTO> queryArticlesBySearchKey(String key, PageParam page) {
-        List<ArticleDO> records = articleDao.listArticlesBySearchKey(key, page);
-        return buildArticleListVo(records, page.getPageSize());
-    }
-
-    @Override
-    public PageListVo<ArticleDTO> queryArticlesByTag(Long tagId, PageParam page) {
-        List<ArticleDO> records = articleDao.listRelatedArticlesOrderByReadCount(null, Arrays.asList(tagId), page);
-        return buildArticleListVo(records, page.getPageSize());
+    public PageResultVo<ArticleDTO> queryArticlesByTag(Long tagId, PageParam page) {
+        Page<ArticleDO> records = articleDao.listRelatedArticlesOrderByReadCount(null, Arrays.asList(tagId), page);
+        List<ArticleDTO> result = records.getRecords().stream().map(this::fillArticleRelatedInfo).collect(Collectors.toList());
+        return PageResultVo.build(result, records.getPages(), records.getTotal(), page.getPageSize());
     }
 
     @Override
@@ -215,7 +220,8 @@ public class ArticleReadServiceImpl implements ArticleReadService {
 
 
     // 填充文章相关联信息
-    private ArticleDTO fillArticleRelatedInfo(ArticleDO record) {
+    @Override
+    public ArticleDTO fillArticleRelatedInfo(ArticleDO record) {
         ArticleDTO dto = ArticleConverter.toDto(record);
         // 分类信息
         dto.getCategory().setCategory(categoryService.queryCategoryName(record.getCategoryId()));

@@ -61,10 +61,10 @@ public class ArticleApplicationService {
     private RabbitTemplate rabbitTemplate;
     @Autowired
     private TagService tagService;
-    public PageListVo<ArticleDTO> queryArticlesByCategory(Long categoryId, PageParam page){
+    public PageResultVo<ArticleDTO> queryArticlesByCategory(Long categoryId, PageParam page){
         return articleReadService.queryArticlesByCategory(categoryId, page);
     }
-    public PageListVo<ArticleDTO> queryArticlesByTag(Long tagId, PageParam pageParam){
+    public PageResultVo<ArticleDTO> queryArticlesByTag(Long tagId, PageParam pageParam){
         return articleReadService.queryArticlesByTag(tagId, pageParam);
     }
     public ArticleDetailDTO getArticleDetail(Long articleId){
@@ -84,7 +84,7 @@ public class ArticleApplicationService {
         return articleDetail;
     }
 
-    public PageListVo<ArticleDTO> relatedRecommend(Long articleId, PageParam pageParam) {
+    public PageResultVo<ArticleDTO> relatedRecommend(Long articleId, PageParam pageParam) {
 
         return articleRecommendService.relatedRecommend(articleId, pageParam);
     }
@@ -160,13 +160,13 @@ public class ArticleApplicationService {
         return vo;
     }
 
-    public PageListVo<ArticleDTO> queryArticlesBySearchKey(String key, PageParam pageParam) {
+    public PageResultVo<ArticleDTO> queryArticlesBySearchKey(String key, PageParam pageParam) {
         return articleReadService.queryArticlesBySearchKey(key, pageParam);
     }
-
-    public PageListVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select) {
-        return articleReadService.queryArticlesByUserAndType(userId, pageParam, select);
-    }
+// todo 优化HomeSelectEnum中获取的文章
+//    public PageResultVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select) {
+//        return articleReadService.queryArticlesByUserAndType(userId, pageParam, select);
+//    }
 
     public void updateArticle(ArticlePostReq req) {
         articleSettingService.updateArticle(req);
@@ -184,7 +184,11 @@ public class ArticleApplicationService {
         return articleSettingService.getArticleList(req);
     }
 
-    public PageListVo<ArticleDTO> queryLatestArticles(PageParam pageParam) {
+    public PageResultVo<ArticleDTO> queryLatestArticles(PageParam pageParam) {
         return articleReadService.queryLatestArticles(pageParam);
+    }
+
+    public PageResultVo<ArticleDTO> queryHotArticles(PageParam pageParam) {
+         return articleReadService.queryHotArticles(pageParam);
     }
 }

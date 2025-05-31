@@ -44,19 +44,26 @@ public class ArticleController extends BaseController {
      * @return 文章列表
      */
     @GetMapping(path = "list/category/{category}")
-    public ResultVo<PageListVo<ArticleDTO>> categoryDataList(@PathVariable("category") Long categoryId,
+    public ResultVo<PageResultVo<ArticleDTO>> categoryDataList(@PathVariable("category") Long categoryId,
                                                              @RequestParam(name = "page") Long page,
                                                              @RequestParam(name = "size", required = false) Long size) {
         PageParam pageParam = buildPageParam(page, size);
-        PageListVo<ArticleDTO> list = articleService.queryArticlesByCategory(categoryId, pageParam);
+        PageResultVo<ArticleDTO> list = articleService.queryArticlesByCategory(categoryId, pageParam);
         return ResultVo.ok(list);
     }
 
      @GetMapping(path = "list/latest")
-     public  ResultVo<PageListVo<ArticleDTO>> latestDataList(@RequestParam(name = "page") Long page,
+     public  ResultVo<PageResultVo<ArticleDTO>> latestDataList(@RequestParam(name = "page") Long page,
                                                              @RequestParam(name = "size", required = false) Long size) {
         PageParam pageParam = buildPageParam(page, size);
-        PageListVo<ArticleDTO> list = articleService.queryLatestArticles(pageParam);
+        PageResultVo<ArticleDTO> list = articleService.queryLatestArticles(pageParam);
+        return ResultVo.ok(list);
+    }
+    @GetMapping( path = "list/hot")
+     public ResultVo<PageResultVo<ArticleDTO>> hotDataList(@RequestParam(name = "page") Long page,
+                                                             @RequestParam(name = "size", required = false) Long size) {
+        PageParam pageParam = buildPageParam(page, size);
+        PageResultVo<ArticleDTO> list = articleService.queryHotArticles(pageParam);
         return ResultVo.ok(list);
     }
     /**
@@ -68,11 +75,11 @@ public class ArticleController extends BaseController {
      * @return 文章列表
      */
     @GetMapping(path = "list/tag/{tag}")
-    public ResultVo<PageListVo<ArticleDTO>> tagList(@PathVariable("tag") Long tagId,
+    public ResultVo<PageResultVo<ArticleDTO>> tagList(@PathVariable("tag") Long tagId,
                                          @RequestParam(name = "page") Long page,
                                          @RequestParam(name = "size", required = false) Long size) {
         PageParam pageParam = buildPageParam(page, size);
-        PageListVo<ArticleDTO> list = articleService.queryArticlesByTag(tagId, pageParam);
+        PageResultVo<ArticleDTO> list = articleService.queryArticlesByTag(tagId, pageParam);
         return ResultVo.ok(list);
     }
     /**
@@ -95,12 +102,12 @@ public class ArticleController extends BaseController {
      */
     @RequestMapping(path = "recommend")
     @MdcDot(bizCode = "#articleId")
-    public ResultVo<PageListVo<ArticleDTO>> recommend(@RequestParam(value = "articleId") Long articleId,
+    public ResultVo<PageResultVo<ArticleDTO>> recommend(@RequestParam(value = "articleId") Long articleId,
                                            @RequestParam(name = "page") Long page,
                                            @RequestParam(name = "size", required = false) Long size) {
         size = Optional.ofNullable(size).orElse(PageParam.DEFAULT_PAGE_SIZE);
         size = Math.min(size, PageParam.DEFAULT_PAGE_SIZE);
-        PageListVo<ArticleDTO> articles = articleService.relatedRecommend(articleId, PageParam.newPageInstance(page, size));
+        PageResultVo<ArticleDTO> articles = articleService.relatedRecommend(articleId, PageParam.newPageInstance(page, size));
         return ResultVo.ok(articles);
     }
     /**

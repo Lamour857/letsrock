@@ -15,7 +15,6 @@ import org.wj.letsrock.domain.article.model.dto.ArticleDTO;
 import org.wj.letsrock.domain.article.repository.ArticleRepository;
 import org.wj.letsrock.infrastructure.persistence.mybatis.article.mapper.ArticleDetailMapper;
 import org.wj.letsrock.infrastructure.persistence.mybatis.article.mapper.ArticleMapper;
-import org.wj.letsrock.infrastructure.persistence.mybatis.article.mapper.ReadCountMapper;
 import org.wj.letsrock.enums.OfficialStatEnum;
 import org.wj.letsrock.enums.UserRole;
 import org.wj.letsrock.enums.YesOrNoEnum;
@@ -25,13 +24,11 @@ import org.wj.letsrock.enums.article.DocumentTypeEnum;
 import org.wj.letsrock.enums.article.PushStatusEnum;
 import org.wj.letsrock.domain.article.model.entity.ArticleDO;
 import org.wj.letsrock.domain.article.model.entity.ArticleDetailDO;
-import org.wj.letsrock.domain.article.model.entity.ReadCountDO;
 import org.wj.letsrock.domain.article.model.param.SearchArticleParams;
 import org.wj.letsrock.domain.article.converter.ArticleConverter;
 import org.wj.letsrock.domain.user.model.entity.UserDO;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author wujia
@@ -43,15 +40,15 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
     @Autowired
     private ArticleDetailMapper articleDetailMapper;
 
-    @Autowired
-    private ReadCountMapper readCountMapper;
+
 
     @Override
-    public List<ArticleDO> listArticlesByCategoryId(Long categoryId, PageParam pageParam) {
+    public Page<ArticleDO> listArticlesByCategoryId(Long categoryId, PageParam pageParam) {
         if (categoryId != null && categoryId <= 0) {
             // 分类不存在时，表示查所有
             categoryId = null;
         }
+        Page<ArticleDO> page = new Page<>(pageParam.getPageNum(), pageParam.getPageSize());
         LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
         query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .eq(ArticleDO::getStatus, PushStatusEnum.ONLINE.getCode());
@@ -63,26 +60,37 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
         }
 
         Optional.ofNullable(categoryId).ifPresent(cid -> query.eq(ArticleDO::getCategoryId, cid));
-        query.last(PageParam.getLimitSql(pageParam))
-                .orderByDesc(ArticleDO::getToppingStat, ArticleDO::getCreateTime);
-        return baseMapper.selectList(query);
+        query.orderByDesc(ArticleDO::getToppingStat, ArticleDO::getCreateTime);
+        return baseMapper.selectPage(page, query);
 
     }
     @Override
-    public List<ArticleDO> listRelatedArticlesOrderByReadCount(Long categoryId, List<Long> tagIds, PageParam pageParam) {
-        List<ReadCountDO> list = baseMapper.listArticleByCategoryAndTags(categoryId, tagIds, pageParam);
-        if (CollectionUtils.isEmpty(list)) {
-            return new ArrayList<>();
+    public Page<ArticleDO> listRelatedArticlesOrderByReadCount(Long categoryId, List<Long> tagIds, PageParam pageParam) {
+        Page<ArticleDO> page = new Page<>(pageParam.getPageNum(), pageParam.getPageSize());
+        LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
+
+        // 基本查询条件
+        query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
+                .eq(ArticleDO::getStatus, PushStatusEnum.ONLINE.getCode());
+
+        // 分类条件
+        if (categoryId != null && categoryId > 0) {
+            query.eq(ArticleDO::getCategoryId, categoryId);
         }
 
-        List<Long> ids = list.stream().map(ReadCountDO::getDocumentId).collect(Collectors.toList());
-        List<ArticleDO> result = baseMapper.selectBatchIds(ids);
-        result.sort((o1, o2) -> {
-            int i1 = ids.indexOf(o1.getId());
-            int i2 = ids.indexOf(o2.getId());
-            return Integer.compare(i1, i2);
-        });
-        return result;
+        // 标签条件
+        if (!CollectionUtils.isEmpty(tagIds)) {
+            // 通过文章-标签关联表查询
+            List<Long> articleIds = baseMapper.selectArticleIdsByTagIds(tagIds);
+            if (!CollectionUtils.isEmpty(articleIds)) {
+                query.in(ArticleDO::getId, articleIds);
+            }
+        }
+
+        // 按阅读量排序
+        query.orderByDesc(ArticleDO::getReadCount);
+
+        return baseMapper.selectPage(page, query);
     }
     @Override
     public ArticleDTO queryArticleDetail(Long articleId) {
@@ -136,18 +144,12 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
     }
     @Override
     public int increaseReadCount(Long articleId) {
-        LambdaQueryWrapper<ReadCountDO> query = Wrappers.lambdaQuery();
-        query.eq(ReadCountDO::getDocumentId, articleId).eq(ReadCountDO::getDocumentType, DocumentTypeEnum.ARTICLE.getCode());
-        ReadCountDO record = readCountMapper.selectOne(query);
-        if (record == null) {
-            record = new ReadCountDO(articleId, DocumentTypeEnum.ARTICLE.getCode(),1);
-            readCountMapper.insert(record);
-        } else {
-            // fixme: 这里存在并发覆盖问题，推荐使用 update read_count set cnt = cnt + 1 where id = xxx
-            record.setCnt(record.getCnt() + 1);
-            readCountMapper.updateById(record);
+        ArticleDO record = baseMapper.selectById(articleId);
+        synchronized (record){
+            record.setReadCount(record.getReadCount() + 1);
         }
-        return record.getCnt();
+        baseMapper.updateById(record);
+        return record.getReadCount();
     }
 
     /**
@@ -217,7 +219,8 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
 
 
     @Override
-    public List<ArticleDO> listArticlesBySearchKey(String key, PageParam pageParam) {
+    public Page<ArticleDO> listArticlesBySearchKey(String key, PageParam pageParam) {
+        Page<ArticleDO> page = new Page<>(pageParam.getPageNum(), pageParam.getPageSize());
         LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
         query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .eq(ArticleDO::getStatus, PushStatusEnum.ONLINE.getCode())
@@ -227,9 +230,8 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
                                 .like(ArticleDO::getShortTitle, key)
                                 .or()
                                 .like(ArticleDO::getSummary, key));
-        query.last(PageParam.getLimitSql(pageParam))
-                .orderByDesc(ArticleDO::getId);
-        return baseMapper.selectList(query);
+        query.orderByDesc(ArticleDO::getId);
+        return baseMapper.selectPage(page, query);
     }
     @Override
     public List<ArticleDO> listArticlesByUserId(Long userId, PageParam pageParam) {
@@ -290,6 +292,24 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
         query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .eq(ArticleDO::getStatus, PushStatusEnum.ONLINE.getCode())
                 .orderByDesc(ArticleDO::getCreateTime);
+        return baseMapper.selectPage(page, query);
+    }
+
+    @Override
+    public Page<ArticleDO> listHotArticles(PageParam pageParam) {
+        Page<ArticleDO> page = new Page<>(pageParam.getPageNum(), pageParam.getPageSize());
+        LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
+
+        // 查询条件:未删除且已上线的文章
+        query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
+                .eq(ArticleDO::getStatus, PushStatusEnum.ONLINE.getCode());
+
+        // 按照阅读量、点赞数、收藏数的综合排序
+        query.orderByDesc(ArticleDO::getReadCount)
+                .orderByDesc(ArticleDO::getPraise)
+                .orderByDesc(ArticleDO::getCollection)
+                .orderByDesc(ArticleDO::getCreateTime);
+
         return baseMapper.selectPage(page, query);
     }
 }

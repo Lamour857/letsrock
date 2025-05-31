@@ -3,6 +3,7 @@ package org.wj.letsrock.domain.article.service;
 import org.wj.letsrock.domain.article.model.dto.ArticleDTO;
 import org.wj.letsrock.model.vo.PageListVo;
 import org.wj.letsrock.model.vo.PageParam;
+import org.wj.letsrock.model.vo.PageResultVo;
 
 /**
  * @author wujia
@@ -17,5 +18,5 @@ public interface ArticleRecommendService {
      * @param pageParam
      * @return
      */
-    PageListVo<ArticleDTO> relatedRecommend(Long articleId, PageParam pageParam);
+    PageResultVo<ArticleDTO> relatedRecommend(Long articleId, PageParam pageParam);
 }

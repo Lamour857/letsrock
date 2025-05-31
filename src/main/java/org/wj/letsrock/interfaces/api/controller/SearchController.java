@@ -9,6 +9,7 @@ import org.wj.letsrock.application.article.ArticleApplicationService;
 import org.wj.letsrock.common.BaseController;
 import org.wj.letsrock.model.vo.PageListVo;
 import org.wj.letsrock.model.vo.PageParam;
+import org.wj.letsrock.model.vo.PageResultVo;
 import org.wj.letsrock.model.vo.ResultVo;
 import org.wj.letsrock.domain.article.model.dto.ArticleDTO;
 import org.wj.letsrock.domain.article.model.dto.SearchArticleDTO;
@@ -45,11 +46,11 @@ public class SearchController extends BaseController {
      * @return
      */
     @GetMapping(path = "list")
-    public ResultVo<PageListVo<ArticleDTO>> searchList(@RequestParam(name = "key", required = false) String key,
+    public ResultVo<PageResultVo<ArticleDTO>> searchList(@RequestParam(name = "key", required = false) String key,
                                                     @RequestParam(name = "page") Long page,
                                                     @RequestParam(name = "size", required = false) Long size) {
         PageParam pageParam = buildPageParam(page, size);
-        PageListVo<ArticleDTO> list = articleService.queryArticlesBySearchKey(key, pageParam);
+        PageResultVo<ArticleDTO> list = articleService.queryArticlesBySearchKey(key, pageParam);
         return ResultVo.ok(list);
     }
 }

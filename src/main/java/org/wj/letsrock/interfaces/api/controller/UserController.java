@@ -104,27 +104,27 @@ public class UserController {
     }
     /**
      * 用户的文章列表翻页
-     *
+     * todo  翻页优化
      * @param userId
      * @param homeSelectType
      * @return
      */
-    @GetMapping(path = "article")
-    public ResultVo<PageListVo<ArticleDTO>> articleList(@RequestParam(name = "userId") Long userId,
-                                             @RequestParam(name = "homeSelectType") String homeSelectType,
-                                             @RequestParam("page") Long page,
-                                             @RequestParam(name = "pageSize", required = false) Long pageSize) {
-        HomeSelectEnum select = HomeSelectEnum.fromCode(homeSelectType);
-        if (select == null) {
-            return ResultVo.fail(StatusEnum.ILLEGAL_ARGUMENTS);
-        }
-
-        if (pageSize == null) pageSize = PageParam.DEFAULT_PAGE_SIZE;
-        PageParam pageParam = PageParam.newPageInstance(page, pageSize);
-        PageListVo<ArticleDTO> dto = articleService.queryArticlesByUserAndType(userId, pageParam, select);
-
-        return ResultVo.ok(dto);
-    }
+//    @GetMapping(path = "article")
+//    public ResultVo<PageListVo<ArticleDTO>> articleList(@RequestParam(name = "userId") Long userId,
+//                                             @RequestParam(name = "homeSelectType") String homeSelectType,
+//                                             @RequestParam("page") Long page,
+//                                             @RequestParam(name = "pageSize", required = false) Long pageSize) {
+//        HomeSelectEnum select = HomeSelectEnum.fromCode(homeSelectType);
+//        if (select == null) {
+//            return ResultVo.fail(StatusEnum.ILLEGAL_ARGUMENTS);
+//        }
+//
+//        if (pageSize == null) pageSize = PageParam.DEFAULT_PAGE_SIZE;
+//        PageParam pageParam = PageParam.newPageInstance(page, pageSize);
+//        PageListVo<ArticleDTO> dto = articleService.queryArticlesByUserAndType(userId, pageParam, select);
+//
+//        return ResultVo.ok(dto);
+//    }
 
     /**
      * 获取用户关注列表
