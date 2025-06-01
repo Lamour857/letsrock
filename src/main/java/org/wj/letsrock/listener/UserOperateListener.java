@@ -42,15 +42,14 @@ public class UserOperateListener {
         log.info("处理完成");
     }
     /**
-     * 用户操作行为，增加对应的积分
+     * 用户操作行为
      *
      * @param msgEvent
      */
     @EventListener(classes = NotifyMsgEvent.class)
-    @Async
-    @Transactional
+    @Async("notifyEventExecutor")  // 指定使用自定义的线程池
     public <T> void notifyMsgListener(NotifyMsgEvent<T> msgEvent) {
-        log.info("线程: {} \n处理Spring消息: {}",Thread.currentThread().getName(),msgEvent);
+        log.info("线程: {} 处理Spring消息: \n{}",Thread.currentThread().getName(),msgEvent);
         CommentDO comment;
         UserRelationDO relation;
         UserFootDO foot;
