@@ -77,7 +77,7 @@ public class ImageTransferService  {
     /**
      * 利用多线程实现图片转存
      */
-    @Async("taskExecutor")
+    @Async("imageTransfer")
     public CompletableFuture<String> asyncTransferImg(String url) throws IOException {
         String result = transferImg(url);
         log.info("线程: {} 执行图片转存: {} ", Thread.currentThread().getName(),result);
