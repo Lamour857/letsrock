@@ -10,6 +10,7 @@ import org.wj.letsrock.domain.article.model.entity.ArticleDO;
 import org.wj.letsrock.domain.article.model.request.ArticlePostReq;
 import org.wj.letsrock.domain.article.model.request.SearchArticleReq;
 import org.wj.letsrock.domain.article.service.*;
+import org.wj.letsrock.domain.cache.CacheService;
 import org.wj.letsrock.domain.user.model.dto.BaseUserInfoDTO;
 import org.wj.letsrock.domain.user.model.entity.UserFootDO;
 import org.wj.letsrock.domain.user.service.UserFootService;
@@ -61,6 +62,8 @@ public class ArticleApplicationService {
     private RabbitTemplate rabbitTemplate;
     @Autowired
     private TagService tagService;
+    @Autowired
+    private CacheService cacheService;
     public PageResultVo<ArticleDTO> queryArticlesByCategory(Long categoryId, PageParam page){
         return articleReadService.queryArticlesByCategory(categoryId, page);
     }
@@ -108,6 +111,8 @@ public class ArticleApplicationService {
         return list;
     }
     public Boolean favor(Long articleId, ArticleDO article, OperateTypeEnum operate){
+        cacheService.tryAcquire( "favor-" + articleId, 1);
+
         UserFootDO foot = userFootService.saveOrUpdateUserFoot(DocumentTypeEnum.ARTICLE, articleId, article.getUserId(),
                 RequestInfoContext.getReqInfo().getUserId(),
                 operate);
@@ -163,7 +168,6 @@ public class ArticleApplicationService {
     public PageResultVo<ArticleDTO> queryArticlesBySearchKey(String key, PageParam pageParam) {
         return articleReadService.queryArticlesBySearchKey(key, pageParam);
     }
-// todo 优化HomeSelectEnum中获取的文章
     public PageResultVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select) {
         return articleReadService.queryArticlesByUserAndType(userId, pageParam, select);
     }

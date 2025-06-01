@@ -14,7 +14,6 @@ import org.wj.letsrock.enums.HomeSelectEnum;
 import org.wj.letsrock.enums.StatusEnum;
 import org.wj.letsrock.model.vo.PageResultVo;
 import org.wj.letsrock.utils.ArticleUtil;
-import org.wj.letsrock.model.vo.PageListVo;
 import org.wj.letsrock.model.vo.PageParam;
 import org.wj.letsrock.enums.article.DocumentTypeEnum;
 import org.wj.letsrock.enums.OperateTypeEnum;
@@ -58,6 +57,7 @@ public class ArticleReadServiceImpl implements ArticleReadService {
 
     @Value("${elasticsearch.enabled:false}")
     private Boolean esEnabled;
+
 
     @Override
     public PageResultVo<ArticleDTO> queryArticlesByCategory(Long categoryId, PageParam page) {
@@ -163,9 +163,9 @@ public class ArticleReadServiceImpl implements ArticleReadService {
     public ArticleDTO queryFullArticleInfo(Long articleId, Long readUser) {
         ArticleDTO article = queryDetailArticleInfo(articleId);
 
+        // 更新点赞信息
         // 文章阅读计数+1
         countService.increaseArticleReadCount(article.getAuthor(), articleId);
-
         // 文章的操作标记
         if (readUser != null) {
             // 更新用于足迹，并判断是否点赞、评论、收藏
@@ -195,6 +195,8 @@ public class ArticleReadServiceImpl implements ArticleReadService {
         if (article == null) {
             throw ExceptionUtil.of(StatusEnum.ARTICLE_NOT_EXISTS, "articleId=" + articleId);
         }
+
+
         // 更新分类相关信息
         CategoryDTO category = article.getCategory();
         category.setCategory(categoryService.queryCategoryName(category.getCategoryId()));

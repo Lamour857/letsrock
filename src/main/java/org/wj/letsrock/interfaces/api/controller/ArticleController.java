@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.wj.letsrock.application.article.ArticleApplicationService;
 import org.wj.letsrock.enums.OperateTypeEnum;
 import org.wj.letsrock.enums.StatusEnum;
+import org.wj.letsrock.infrastructure.limit.RateLimit;
 import org.wj.letsrock.model.vo.PageListVo;
 import org.wj.letsrock.model.vo.PageParam;
 import org.wj.letsrock.model.vo.PageResultVo;
@@ -153,6 +154,7 @@ public class ArticleController extends BaseController {
      * @param type      取值来自于 OperateTypeEnum#code
      * @return
      */
+    @RateLimit (key = "article:favor:", spEl = "T(org.wj.letsrock.infrastructure.context.RequestInfoContext).getReqInfo().getUserId() + ':' + #articleId + ':'")
     @GetMapping(path = "favor")
     @MdcDot(bizCode = "#articleId")
     public ResultVo<Boolean> favor(@RequestParam(name = "articleId") Long articleId,

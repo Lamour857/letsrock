@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.wj.letsrock.application.notification.NotifyApplicationService;
-import org.wj.letsrock.domain.article.service.ArticlePraiseService;
 import org.wj.letsrock.domain.cache.CacheKey;
 import org.wj.letsrock.domain.cache.CacheService;
 import org.wj.letsrock.infrastructure.config.RabbitmqConfig;
@@ -28,8 +28,7 @@ public class UserOperateListener {
     private CacheService cacheService;
     @Autowired
     private NotifyApplicationService notifyService;
-    @Autowired
-    private ArticlePraiseService articlePraiseService;
+
 
     @RabbitListener(queues = RabbitmqConfig.OPERATE_QUEUE,
             containerFactory = "rabbitListenerContainerFactory")
@@ -45,6 +44,7 @@ public class UserOperateListener {
      */
     @EventListener(classes = NotifyMsgEvent.class)
     @Async
+    @Transactional
     public <T> void notifyMsgListener(NotifyMsgEvent<T> msgEvent) {
         log.info("线程: {} \n处理Spring消息: {}",Thread.currentThread().getName(),msgEvent);
         CommentDO comment;
@@ -75,13 +75,13 @@ public class UserOperateListener {
                 foot = (UserFootDO) msgEvent.getContent();
 //                cacheService.hIncrement(CacheKey.USER_STATISTIC_INFO + foot.getDocumentUserId(), CacheKey.PRAISE_COUNT, 1);
 //                cacheService.hIncrement(CacheKey.ARTICLE_STATISTIC_INFO + foot.getDocumentId(), CacheKey.PRAISE_COUNT, 1);
-                articlePraiseService.handlePraise(foot.getDocumentId(),foot.getUserId());
+               // articlePraiseService.handlePraise(foot.getDocumentId(),foot.getUserId());
                 break;
             case CANCEL_PRAISE:
                 foot = (UserFootDO) msgEvent.getContent();
 //                cacheService.hIncrement(CacheKey.USER_STATISTIC_INFO + foot.getDocumentUserId(), CacheKey.PRAISE_COUNT, -1);
 //                cacheService.hIncrement(CacheKey.ARTICLE_STATISTIC_INFO + foot.getDocumentId(), CacheKey.PRAISE_COUNT, -1);
-                articlePraiseService.handlePraise(foot.getDocumentId(),foot.getUserId());
+                //articlePraiseService.handlePraise(foot.getDocumentId(),foot.getUserId());
                 break;
             case FOLLOW:
                 relation = (UserRelationDO) msgEvent.getContent();

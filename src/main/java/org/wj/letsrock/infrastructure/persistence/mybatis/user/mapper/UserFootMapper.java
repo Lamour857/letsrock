@@ -21,23 +21,6 @@ public interface UserFootMapper extends BaseMapper<UserFootDO> {
     List<SimpleUserInfoDTO> listSimpleUserInfosByArticleId(@Param("documentId")Long documentId,
                                                           @Param("type") Integer type,
                                                           @Param("size") int size);
-    /**
-     * 查询用户阅读的文章列表
-     *
-     * @param userId
-     * @param pageParam
-     * @return
-     */
-    List<Long> listReadArticleByUserId(@Param("userId") Long userId, @Param("pageParam") PageParam pageParam);
-
-    /**
-     * 查询用户收藏的文章列表
-     *
-     * @param userId
-     * @param pageParam
-     * @return
-     */
-    List<Long> listCollectedArticlesByUserId(@Param("userId") Long userId, @Param("pageParam") PageParam pageParam);
 
     UserFootStatisticDTO getFootCount();
 }

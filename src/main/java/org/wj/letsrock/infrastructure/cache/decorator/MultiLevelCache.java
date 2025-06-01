@@ -186,4 +186,15 @@ public class MultiLevelCache implements CacheService {
         // 带超时的分布式锁
         return remoteCache.tryAcquire(key, seconds);
     }
+
+    @Override
+    public Long increment(String countKey, long l) {
+        localCache.remove(countKey);
+        return remoteCache.increment(countKey, l);
+    }
+
+    @Override
+    public void expire(String countKey, int period, TimeUnit timeUnit) {
+        remoteCache.expire(countKey, period, timeUnit);
+    }
 }

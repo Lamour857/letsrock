@@ -260,5 +260,15 @@ public class RedisCache implements CacheService {
                 TimeUnit.SECONDS
         );
     }
+
+    @Override
+    public Long increment(String countKey, long l) {
+        return redisTemplate.opsForValue().increment(generateKey(countKey), l);
+    }
+
+    @Override
+    public void expire(String countKey, int period, TimeUnit timeUnit) {
+         redisTemplate.expire(generateKey(countKey), period, timeUnit);
+    }
 }
 

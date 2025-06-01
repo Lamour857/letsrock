@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
  **/
 public class CacheKey {
     public static final String CATEGORY_KEY = "category:";
+    public static final String RATE_LIMIT = "rate_limit:";
     public static String BASE_KEY_PREFIX="letsrock:";
     /**
      * 用户相关统计信息

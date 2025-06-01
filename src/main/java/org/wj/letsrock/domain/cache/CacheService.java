@@ -66,4 +66,7 @@ public interface CacheService {
     Boolean tryAcquire(String key, int seconds);
 
 
+    Long increment(String countKey, long l);
+
+    void expire(String countKey, int period, TimeUnit timeUnit);
 }

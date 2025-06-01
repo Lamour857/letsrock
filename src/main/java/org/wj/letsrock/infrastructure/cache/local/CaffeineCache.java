@@ -121,4 +121,14 @@ public class CaffeineCache implements CacheService {
     public Boolean tryAcquire(String key, int seconds) {
         throw new UnsupportedOperationException("Caffeine cache does not support locking");
     }
+
+    @Override
+    public Long increment(String countKey, long l) {
+        throw new UnsupportedOperationException("Caffeine cache does not support increment operations");
+    }
+
+    @Override
+    public void expire(String countKey, int period, TimeUnit timeUnit) {
+        throw new UnsupportedOperationException("Caffeine cache does not support expire operations");
+    }
 }
