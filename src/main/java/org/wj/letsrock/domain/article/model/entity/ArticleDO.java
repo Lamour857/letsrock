@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.wj.letsrock.domain.common.Collectable;
+import org.wj.letsrock.domain.common.Praiseable;
 import org.wj.letsrock.model.BaseDO;
 
 /**
@@ -25,7 +27,7 @@ import org.wj.letsrock.model.BaseDO;
 @ToString
 @Accessors(chain = true)
 @TableName("article")
-public class ArticleDO extends BaseDO implements Serializable {
+public class ArticleDO extends BaseDO implements Serializable, Praiseable, Collectable {
 
     private static final long serialVersionUID = 1L;
 
@@ -85,6 +87,27 @@ public class ArticleDO extends BaseDO implements Serializable {
     private Integer readType;
 
 
+    @Override
+    public Integer praise() {
+        this.setPraise( this.getPraise()+1);
+         return this.getPraise();
+    }
 
+    @Override
+    public Integer cancelPraise() {
+        this.setPraise( Math.max(this.getPraise() - 1, 0));
+         return this.getPraise();
+    }
 
+    @Override
+    public Integer collect() {
+        this.setCollection( this.getCollection()+1);
+        return this.getCollection();
+    }
+
+    @Override
+    public Integer cancelCollect() {
+        this.setCollection(Math.max(this.getCollection()-1,0));
+        return this.getCollection();
+    }
 }

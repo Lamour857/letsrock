@@ -148,7 +148,7 @@ public class ArticleController extends BaseController {
 
 //    @Permission(role = UserRole.LOGIN)
     /**
-     * 收藏、点赞等相关操作
+     * 文章点赞
      *
      * @param articleId
      * @param type      取值来自于 OperateTypeEnum#code
@@ -171,9 +171,37 @@ public class ArticleController extends BaseController {
         if (article == null) {
             return ResultVo.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, "文章不存在!");
         }
-        articleService.favor(articleId, article, operate);
+        articleService.favorOrCollect(articleId, article, operate);
         return ResultVo.ok(true);
     }
+    /**
+     * 文章收藏
+     *
+     * @param articleId
+     * @param type      取值来自于 OperateTypeEnum#code
+     * @return
+     */
+    @RateLimit (key = "article:collect:", spEl = "T(org.wj.letsrock.infrastructure.context.RequestInfoContext).getReqInfo().getUserId() + ':' + #articleId + ':'")
+    @GetMapping(path = "collect")
+    @MdcDot(bizCode = "#articleId")
+    public ResultVo<Boolean> collect(@RequestParam(name = "articleId") Long articleId,
+                                   @RequestParam(name = "type") Integer type)  {
+        if (log.isDebugEnabled()) {
+            log.debug("开始收藏: {}", type);
+        }
+        OperateTypeEnum operate = OperateTypeEnum.fromCode(type);
+        if (operate == OperateTypeEnum.EMPTY) {
+            return ResultVo.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, type + "非法");
+        }
+        // 要求文章必须存在
+        ArticleDO article = articleService.queryBasicArticle(articleId);
+        if (article == null) {
+            return ResultVo.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, "文章不存在!");
+        }
+        articleService.favorOrCollect(articleId, article, operate);
+        return ResultVo.ok(true);
+    }
+
 
     /**
      * 发布文章，返回文章id以便跳转

@@ -73,4 +73,5 @@ public interface ArticleReadService {
     PageResultVo<ArticleDTO> queryHotArticles(PageParam pageParam);
 
     ArticleDTO fillArticleRelatedInfo(ArticleDO record);
+
 }

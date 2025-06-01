@@ -2,6 +2,7 @@ package org.wj.letsrock.domain.statistics.service;
 
 import org.wj.letsrock.domain.statistics.model.dto.StatisticsCountDTO;
 import org.wj.letsrock.domain.statistics.model.dto.StatisticsDayDTO;
+import org.wj.letsrock.domain.user.model.entity.UserFootDO;
 
 import java.util.List;
 
@@ -25,4 +26,8 @@ public interface StatisticsService {
      * @return
      */
     List<StatisticsDayDTO> getPvUvDayList(Integer day);
+
+    void handlePraise(UserFootDO foot);
+
+    void handleCollect(UserFootDO foot);
 }

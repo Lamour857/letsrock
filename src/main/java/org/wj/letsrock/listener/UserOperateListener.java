@@ -8,8 +8,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.wj.letsrock.application.notification.NotifyApplicationService;
+import org.wj.letsrock.domain.article.service.ArticleWriteService;
 import org.wj.letsrock.domain.cache.CacheKey;
 import org.wj.letsrock.domain.cache.CacheService;
+import org.wj.letsrock.domain.statistics.service.StatisticsService;
 import org.wj.letsrock.infrastructure.config.RabbitmqConfig;
 import org.wj.letsrock.domain.comment.model.entity.CommentDO;
 import org.wj.letsrock.infrastructure.event.NotifyMsgEvent;
@@ -28,6 +30,8 @@ public class UserOperateListener {
     private CacheService cacheService;
     @Autowired
     private NotifyApplicationService notifyService;
+    @Autowired
+     private StatisticsService statisticsService;
 
 
     @RabbitListener(queues = RabbitmqConfig.OPERATE_QUEUE,
@@ -62,26 +66,14 @@ public class UserOperateListener {
                 cacheService.hIncrement(CacheKey.ARTICLE_STATISTIC_INFO + comment.getArticleId(), CacheKey.COMMENT_COUNT, -1);
                 break;
             case COLLECT:
-                 foot= (UserFootDO) msgEvent.getContent();
-                cacheService.hIncrement(CacheKey.USER_STATISTIC_INFO + foot.getDocumentUserId(), CacheKey.COLLECTION_COUNT, 1);
-                cacheService.hIncrement(CacheKey.ARTICLE_STATISTIC_INFO + foot.getDocumentId(), CacheKey.COLLECTION_COUNT, 1);
-                break;
             case CANCEL_COLLECT:
                 foot = (UserFootDO) msgEvent.getContent();
-                cacheService.hIncrement(CacheKey.USER_STATISTIC_INFO + foot.getDocumentUserId(), CacheKey.COLLECTION_COUNT, -1);
-                cacheService.hIncrement(CacheKey.ARTICLE_STATISTIC_INFO + foot.getDocumentId(), CacheKey.COLLECTION_COUNT, -1);
+                statisticsService.handleCollect(foot);
                 break;
             case PRAISE:
-                foot = (UserFootDO) msgEvent.getContent();
-//                cacheService.hIncrement(CacheKey.USER_STATISTIC_INFO + foot.getDocumentUserId(), CacheKey.PRAISE_COUNT, 1);
-//                cacheService.hIncrement(CacheKey.ARTICLE_STATISTIC_INFO + foot.getDocumentId(), CacheKey.PRAISE_COUNT, 1);
-               // articlePraiseService.handlePraise(foot.getDocumentId(),foot.getUserId());
-                break;
             case CANCEL_PRAISE:
                 foot = (UserFootDO) msgEvent.getContent();
-//                cacheService.hIncrement(CacheKey.USER_STATISTIC_INFO + foot.getDocumentUserId(), CacheKey.PRAISE_COUNT, -1);
-//                cacheService.hIncrement(CacheKey.ARTICLE_STATISTIC_INFO + foot.getDocumentId(), CacheKey.PRAISE_COUNT, -1);
-                //articlePraiseService.handlePraise(foot.getDocumentId(),foot.getUserId());
+                statisticsService.handlePraise(foot);
                 break;
             case FOLLOW:
                 relation = (UserRelationDO) msgEvent.getContent();
@@ -99,6 +91,6 @@ public class UserOperateListener {
                 break;
             default:
         }
-        log.info("处理完成");
+        log.info("消息处理完成");
     }
 }

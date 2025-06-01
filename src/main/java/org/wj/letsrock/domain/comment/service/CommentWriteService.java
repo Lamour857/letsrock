@@ -1,5 +1,6 @@
 package org.wj.letsrock.domain.comment.service;
 
+import org.wj.letsrock.domain.comment.model.entity.CommentDO;
 import org.wj.letsrock.domain.comment.model.request.CommentSaveReq;
 
 /**
@@ -22,4 +23,6 @@ public interface CommentWriteService {
      * @throws Exception
      */
     void deleteComment(Long commentId, Long userId);
+
+    void updateComment(CommentDO comment);
 }

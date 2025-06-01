@@ -110,9 +110,9 @@ public class ArticleApplicationService {
         list.forEach(c -> c.setSelected(c.getCategoryId().equals(categoryId)));
         return list;
     }
-    public Boolean favor(Long articleId, ArticleDO article, OperateTypeEnum operate){
-        cacheService.tryAcquire( "favor-" + articleId, 1);
+    public Boolean favorOrCollect(Long articleId, ArticleDO article, OperateTypeEnum operate){
 
+        // 保存用户文章关系
         UserFootDO foot = userFootService.saveOrUpdateUserFoot(DocumentTypeEnum.ARTICLE, articleId, article.getUserId(),
                 RequestInfoContext.getReqInfo().getUserId(),
                 operate);

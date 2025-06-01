@@ -1,5 +1,6 @@
 package org.wj.letsrock.domain.article.service;
 
+import org.wj.letsrock.domain.article.model.entity.ArticleDO;
 import org.wj.letsrock.domain.article.model.request.ArticlePostReq;
 
 /**
@@ -23,4 +24,10 @@ public interface ArticleWriteService {
      * @param userId 执行操作的用户
      */
     void deleteArticle(Long articleId, Long userId);
+     /**
+     * 更新文章
+     *
+     * @param req
+     */
+     void updateArticle(ArticleDO article);
 }

@@ -1,6 +1,7 @@
 package org.wj.letsrock.domain.user.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wj.letsrock.domain.user.repository.UserFootRepository;
@@ -26,6 +27,7 @@ import java.util.function.Supplier;
  * @createTime: 2025-04-20-22:31
  **/
 @Service
+@Slf4j
 public class UserFootServiceImpl implements UserFootService {
     @Autowired
     private UserFootRepository userFootDao;
@@ -80,13 +82,14 @@ public class UserFootServiceImpl implements UserFootService {
                 userFootDO.setReadStat(1);
                 // 需要更新时间，用于浏览记录
                 return true;
-            case PRAISE:
+            case PRAISE:    // 点赞相关
             case CANCEL_PRAISE:
+                // operateSat
                 return compareAndUpdate(userFootDO::getPraiseStat, userFootDO::setPraiseStat, operate.getDbStatCode());
-            case COLLECTION:
+            case COLLECTION:    // 收藏相关
             case CANCEL_COLLECTION:
                 return compareAndUpdate(userFootDO::getCollectionStat, userFootDO::setCollectionStat, operate.getDbStatCode());
-            case COMMENT:
+            case COMMENT:   // 评论相关
             case DELETE_COMMENT:
                 return compareAndUpdate(userFootDO::getCommentStat, userFootDO::setCommentStat, operate.getDbStatCode());
             default:
