@@ -32,6 +32,8 @@ public class RedisCache implements CacheService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
 
+
+
     @Override
     public <T> Optional<T> get(String key, Class<T> type) {
         try {
@@ -149,7 +151,7 @@ public class RedisCache implements CacheService {
 
     @Override
     public <T> Set<T> sMembers(String key,  Class<T> type) {
-        return redisTemplate.opsForSet().members(generateKey(key)).stream().map(json -> {
+        return Objects.requireNonNull(redisTemplate.opsForSet().members(generateKey(key))).stream().map(json -> {
             try {
                 return objectMapper.readValue(json, type);
             } catch (IOException e) {
@@ -185,7 +187,7 @@ public class RedisCache implements CacheService {
     public <T> Map<String, T> hGetAll(String key, Class<T> clazz) {
         String actualKey = generateKey(key);
         Map<Object, Object> entries = redisTemplate.opsForHash().entries(actualKey);
-        if (entries == null || entries.isEmpty()) {
+        if (entries.isEmpty()) {
             return Collections.emptyMap();
         }
         Map<String, T> resultMap = new HashMap<>(entries.size());

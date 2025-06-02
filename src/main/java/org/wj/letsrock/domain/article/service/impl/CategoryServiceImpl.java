@@ -3,6 +3,7 @@ package org.wj.letsrock.domain.article.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wj.letsrock.domain.article.model.dto.CategoryDTO;
+import org.wj.letsrock.domain.article.model.param.SearchCategoryParams;
 import org.wj.letsrock.domain.article.repository.CategoryRepository;
 import org.wj.letsrock.domain.article.converter.CategoryConverter;
 import org.wj.letsrock.domain.article.model.entity.CategoryDO;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -36,12 +38,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public String queryCategoryName(Long categoryId) {
-        Optional<CategoryDTO> optional = cacheService.sGet(CacheKey.CATEGORY_KEY,  CategoryDTO.class);
+        // 延迟双删策略， 缓存过期时间设置为5分钟
+        // 缓存不存在，则从数据库中查询
+        Optional<CategoryDTO> optional = cacheService.get(CacheKey.categoryKey(categoryId),  CategoryDTO.class);
         if (optional.isPresent()) {
             return optional.get().getCategory();
         }else{
             CategoryDO categoryDO = categoryDao.getById(categoryId);
-            cacheService.put(CacheKey.categoryKey(categoryId), CategoryConverter.toDTO(categoryDO));
+            cacheService.put(CacheKey.categoryKey(categoryId), CategoryConverter.toDTO(categoryDO), 5, TimeUnit.MINUTES);
             return categoryDO.getCategoryName();
         }
 
@@ -49,23 +53,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDTO> loadAllCategories() {
-        if (cacheService.sSize(CacheKey.CATEGORY_KEY) <= 5) {
-            refreshCache();
-        }
-        List<CategoryDTO> list = new ArrayList<>(cacheService.sMembers(CacheKey.CATEGORY_KEY, CategoryDTO.class));
+        // 直接从数据库获取全部分类
+        List<CategoryDO> categoryDOList = categoryDao.listAllCategories();
+        List<CategoryDTO> list = categoryDOList.stream().map(CategoryConverter::toDTO).collect(Collectors.toList());
         list.removeIf(s -> s.getCategoryId() <= 0);
         list.sort(Comparator.comparingInt(CategoryDTO::getRank));
+        list.forEach(s -> cacheService.put(CacheKey.categoryKey(s.getCategoryId()), s, 5, TimeUnit.MINUTES));
         return list;
-    }
-
-    /**
-     * 刷新缓存
-     */
-    @Override
-    public void refreshCache() {
-        List<CategoryDO> list = categoryDao.listAllCategoriesFromDb();
-        cacheService.remove(CacheKey.CATEGORY_KEY);
-        list.forEach(s -> cacheService.sAdd(CacheKey.CATEGORY_KEY, CategoryConverter.toDTO(s)));
     }
 
 }

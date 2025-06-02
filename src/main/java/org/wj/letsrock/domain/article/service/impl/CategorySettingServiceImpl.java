@@ -2,8 +2,12 @@ package org.wj.letsrock.domain.article.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.wj.letsrock.domain.article.model.dto.CategoryDTO;
 import org.wj.letsrock.domain.article.repository.CategoryRepository;
+import org.wj.letsrock.domain.cache.CacheKey;
+import org.wj.letsrock.domain.cache.CacheService;
+import org.wj.letsrock.infrastructure.cache.sync.CacheSyncStrategy;
 import org.wj.letsrock.infrastructure.persistence.mybatis.article.CategoryRepositoryImpl;
 import org.wj.letsrock.utils.NumUtil;
 import org.wj.letsrock.model.vo.PageResultVo;
@@ -29,36 +33,41 @@ public class CategorySettingServiceImpl implements CategorySettingService {
     private CategoryService categoryService;
     @Autowired
     private CategoryRepository categoryDao;
+    @Autowired
+    private CacheSyncStrategy  cacheSyncStrategy;
+    @Autowired
+    private CacheService cacheService;
 
     @Override
+    @Transactional
     public void saveCategory(CategoryReq categoryReq) {
         CategoryDO categoryDO = CategoryConverter.toDO(categoryReq);
-        if (NumUtil.nullOrZero(categoryReq.getCategoryId())) {
-            categoryDao.save(categoryDO);
-        } else {
-            categoryDO.setId(categoryReq.getCategoryId());
-            categoryDao.updateById(categoryDO);
-        }
-        categoryService.refreshCache();
+
+        // 延迟双删CacheKey.CATEGORY_KEY + categoryDO.getId()
+        cacheSyncStrategy.sync(CacheKey.categoryKey(categoryDO.getId()), categoryDO, () -> {
+            categoryDao.saveOrUpdate(categoryDO);
+        });
     }
 
     @Override
+    @Transactional
     public void deleteCategory(Integer categoryId) {
         CategoryDO categoryDO = categoryDao.getById(categoryId);
-        if (categoryDO != null){
+        if(categoryDO == null){return;}
+        cacheSyncStrategy .sync(CacheKey.categoryKey(categoryDO.getId()), categoryDO, () -> {
             categoryDao.removeById(categoryDO);
-        }
-        categoryService.refreshCache();
+        });
     }
 
     @Override
+    @Transactional
     public void operateCategory(Integer categoryId, Integer pushStatus) {
         CategoryDO categoryDO = categoryDao.getById(categoryId);
-        if (categoryDO != null){
-            categoryDO.setStatus(pushStatus);
-            categoryDao.updateById(categoryDO);
-        }
-        categoryService.refreshCache();
+        if( categoryDO == null){return;}
+        cacheSyncStrategy.sync(CacheKey.categoryKey(categoryDO.getId()) , categoryDO, () -> {
+              categoryDO.setStatus(pushStatus);
+              categoryDao.updateById(categoryDO);
+        });
     }
 
     @Override
