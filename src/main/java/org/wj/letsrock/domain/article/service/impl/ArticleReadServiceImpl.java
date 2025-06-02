@@ -171,6 +171,7 @@ public class ArticleReadServiceImpl implements ArticleReadService {
         // 更新点赞信息
         // 文章阅读计数+1
         cacheService.hIncrement(CacheKey.articleStatisticInfo( articleId), CacheKey.READ_COUNT, 1);
+        cacheService.zAdd(CacheKey.DIRTY_ARTICLE_STATISTIC, articleId, System.currentTimeMillis());
         // 文章的操作标记
         if (readUser != null) {
             // 更新用于足迹，并判断是否点赞、评论、收藏

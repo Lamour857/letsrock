@@ -203,7 +203,7 @@ public class MultiLevelCache implements CacheService {
     }
 
     @Override
-    public void zRemove(String key, Long articleId) {
-        remoteCache.zRemove(key, articleId);
+    public void zRemove(String key, Object value) {
+        remoteCache.zRemove(key, value);
     }
 }

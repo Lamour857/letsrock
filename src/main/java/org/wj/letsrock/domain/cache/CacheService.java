@@ -57,5 +57,5 @@ public interface CacheService {
     void expire(String countKey, int period, TimeUnit timeUnit);
 
 
-    void zRemove(String dirtyArticleStatistic, Long articleId);
+    void zRemove(String key, Object value);
 }

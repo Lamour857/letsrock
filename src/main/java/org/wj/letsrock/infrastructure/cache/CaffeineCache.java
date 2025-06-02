@@ -138,7 +138,7 @@ public class CaffeineCache implements CacheService {
     }
 
     @Override
-    public void zRemove(String dirtyArticleStatistic, Long articleId) {
+    public void zRemove(String key, Object value) {
         throw new UnsupportedOperationException("Caffeine cache does not support zRemove operations");
     }
 }

@@ -30,7 +30,7 @@ public class ArticleStatisticSyncTask {
     /**
      * 每5分钟执行一次增量同步
      */
-    @Scheduled(fixedRate = 300000)
+    @Scheduled(fixedRate = 60000)
     public void syncArticleStatistic() {
          log.info("开始执行文章统计同步任务");
         try {

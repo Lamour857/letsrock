@@ -96,7 +96,6 @@ public class CountServiceImpl implements CountService {
             cacheService.hIncrement(key,field,delta);
             cacheService.zAdd(CacheKey.DIRTY_ARTICLE_STATISTIC,dirtyId,System.currentTimeMillis());
         }
-
     }
 
     @Override
@@ -107,10 +106,22 @@ public class CountServiceImpl implements CountService {
     public ArticleFootCountDTO queryArticleStatisticInfo(Long id) {
         Map<String, Integer> ans=cacheService.hGetAll(CacheKey.articleStatisticInfo(id),Integer.class);
         ArticleFootCountDTO info = new ArticleFootCountDTO();
-        info.setPraiseCount( ans.getOrDefault(CacheKey.PRAISE_COUNT, 0));
-        info.setCollectionCount(ans.getOrDefault(CacheKey.COLLECTION_COUNT, 0));
-        info.setCommentCount(ans.getOrDefault(CacheKey.COMMENT_COUNT, 0));
-        info.setReadCount(ans.getOrDefault(CacheKey.READ_COUNT, 0));
+        if(ans.get(CacheKey.PRAISE_COUNT)==null){
+            info.setPraiseCount(0);
+            cacheService.hIncrement(CacheKey.articleStatisticInfo(id),CacheKey.PRAISE_COUNT,0);
+        }
+        if(ans.get(CacheKey.COLLECTION_COUNT)==null){
+            info.setCollectionCount(0);
+            cacheService.hIncrement(CacheKey.articleStatisticInfo(id),CacheKey.COLLECTION_COUNT,0);
+        }
+        if(ans.get(CacheKey.COMMENT_COUNT)==null){
+            info.setCommentCount(0);
+            cacheService.hIncrement(CacheKey.articleStatisticInfo(id),CacheKey.COMMENT_COUNT,0);
+        }
+        if(ans.get(CacheKey.READ_COUNT)==null){
+            info.setReadCount(0);
+            cacheService.hIncrement(CacheKey.articleStatisticInfo(id),CacheKey.READ_COUNT,0);
+        }
         return info;
     }
 

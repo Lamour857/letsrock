@@ -234,8 +234,13 @@ public class RedisCache implements CacheService {
     }
 
     @Override
-    public void zRemove(String key, Long articleId) {
-         redisTemplate.opsForZSet().remove(generateKey(key), articleId);
+    public void zRemove(String key, Object articleId) {
+        try{
+            String json= objectMapper.writeValueAsString(articleId);
+             redisTemplate.opsForZSet().remove(generateKey(key), json);
+        }catch (JsonProcessingException e){
+             log.warn("Failed to delete object from zSet: {}", e.getMessage());
+        }
     }
 }
 
