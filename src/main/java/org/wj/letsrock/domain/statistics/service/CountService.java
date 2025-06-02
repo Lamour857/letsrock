@@ -1,6 +1,7 @@
 package org.wj.letsrock.domain.statistics.service;
 
 import org.wj.letsrock.domain.user.model.dto.ArticleFootCountDTO;
+import org.wj.letsrock.enums.notify.NotifyTypeEnum;
 
 /**
  * @author wujia
@@ -8,22 +9,16 @@ import org.wj.letsrock.domain.user.model.dto.ArticleFootCountDTO;
  * @createTime: 2025-04-19-19:23
  **/
 public interface CountService {
-    /**
-     * 查询文章相关的统计信息
-     *
-     * @param id
-     * @return 返回文章的 收藏、点赞、评论、阅读数
-     */
-    ArticleFootCountDTO queryArticleStatisticInfo(Long id);
+
 
     /**
-     * 文章计数+1
+     * 处理计数变动
      *
-     * @param author 作者
-     * @param articleId    文章
-     * @return 计数器
+     * @param documentId 文章id
+     * @param type 类型
      */
-    void increaseArticleReadCount(Long author, Long articleId);
+    void handleCount(NotifyTypeEnum type,Object content);
+
 
     /**
      * 获取评论点赞数量
@@ -31,4 +26,11 @@ public interface CountService {
      * @return
      */
     Long queryCommentPraiseCount(Long commentId);
+    /**
+     * 查询文章相关的统计信息
+     *
+     * @param id
+     * @return 返回文章的 收藏、点赞、评论、阅读数
+     */
+    ArticleFootCountDTO queryArticleStatisticInfo(Long id);
 }
