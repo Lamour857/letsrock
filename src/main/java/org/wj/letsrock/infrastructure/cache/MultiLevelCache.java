@@ -1,4 +1,4 @@
-package org.wj.letsrock.infrastructure.cache.decorator;
+package org.wj.letsrock.infrastructure.cache;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.wj.letsrock.domain.cache.CacheService;
-import org.wj.letsrock.infrastructure.log.mdc.MdcDot;
 
 import java.util.List;
 import java.util.Map;
@@ -110,6 +109,11 @@ public class MultiLevelCache implements CacheService {
     }
 
     @Override
+    public void zAdd(String key, Object value, long l) {
+        remoteCache.zAdd(key, value, l);
+    }
+
+    @Override
     public Long sAdd(String key, Object... values) {
         // 操作远程缓存并失效本地
         Long result = remoteCache.sAdd(key, values);
@@ -194,7 +198,12 @@ public class MultiLevelCache implements CacheService {
     }
 
     @Override
-    public void expire(String countKey, int period, TimeUnit timeUnit) {
-        remoteCache.expire(countKey, period, timeUnit);
+    public void expire(String key, int period, TimeUnit timeUnit) {
+        remoteCache.expire(key, period, timeUnit);
+    }
+
+    @Override
+    public void zRemove(String key, Long articleId) {
+        remoteCache.zRemove(key, articleId);
     }
 }

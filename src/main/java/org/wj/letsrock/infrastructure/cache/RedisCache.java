@@ -1,4 +1,4 @@
-package org.wj.letsrock.infrastructure.cache.redis;
+package org.wj.letsrock.infrastructure.cache;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -71,28 +71,6 @@ public class RedisCache implements CacheService {
         }
     }
 
-//    @Override
-//    public <T> T hGet(String key, String hashKey, Class<T> type) {
-//        try{
-//            String json = (String) redisTemplate.opsForHash().get(generateKey(key), hashKey);
-//            return objectMapper.readValue(json, type);
-//        }catch (Exception e){
-//            log.error("json转换异常", e);
-//            throw ExceptionUtil.of(StatusEnum.UNEXPECT_ERROR,"json转换异常");
-//        }
-//    }
-
-//    @Override
-//    public void hPut(String key, String hashKey, Object value) {
-//        try {
-//            String json = objectMapper.writeValueAsString(value);
-//            redisTemplate.opsForHash().put(generateKey(key), hashKey, json);
-//        } catch (JsonProcessingException e) {
-//            log.error("json转换异常", e);
-//            throw ExceptionUtil.of(StatusEnum.UNEXPECT_ERROR,"json转换异常");
-//        }
-//
-//    }
 
     @Override
     public void hIncrement(String key, String field, Integer value) {
@@ -109,6 +87,16 @@ public class RedisCache implements CacheService {
         return tuples.stream()
                 .map(tuple -> ImmutablePair.of(tuple.getValue(), tuple.getScore()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void zAdd(String key, Object value, long l) {
+        try{
+            String json=objectMapper.writeValueAsString(value);
+            redisTemplate.opsForZSet().add(generateKey(key),json,l);
+        }catch ( IOException e){
+             log.warn("Failed to add to zSet: {}", e.getMessage());
+        }
     }
 
     @Override
@@ -206,34 +194,6 @@ public class RedisCache implements CacheService {
 
     }
 
-//    @Override
-//    public void hPutAll(String key, Map<String, Object> map) {
-//        map.forEach((hashKey, value) -> {
-//            try {
-//                String json = objectMapper.writeValueAsString(value);
-//                redisTemplate.opsForHash().put(generateKey(key), hashKey, json);
-//            } catch (JsonProcessingException e) {
-//                log.error("json转换异常", e);
-//                throw ExceptionUtil.of(StatusEnum.UNEXPECT_ERROR,"json转换异常");
-//            }
-//        });
-//    }
-//
-//    @Override
-//    public void hDelete(String key, String... hashKeys) {
-//        redisTemplate.opsForHash().delete(generateKey(key), (Object) hashKeys);
-//
-//    }
-//
-//    @Override
-//    public boolean hExists(String key, String hashKey) {
-//        return Boolean.TRUE.equals(redisTemplate.opsForHash().hasKey(generateKey(key), hashKey));
-//    }
-//
-//    @Override
-//    public boolean exists(String key) {
-//        return Boolean.TRUE.equals(redisTemplate.hasKey(generateKey(key)));
-//    }
 
     @Override
     public Boolean acquire(String lockKey) {
@@ -264,13 +224,18 @@ public class RedisCache implements CacheService {
     }
 
     @Override
-    public Long increment(String countKey, long l) {
-        return redisTemplate.opsForValue().increment(generateKey(countKey), l);
+    public Long increment(String key, long l) {
+        return redisTemplate.opsForValue().increment(generateKey(key), l);
     }
 
     @Override
-    public void expire(String countKey, int period, TimeUnit timeUnit) {
-         redisTemplate.expire(generateKey(countKey), period, timeUnit);
+    public void expire(String key, int period, TimeUnit timeUnit) {
+         redisTemplate.expire(generateKey(key), period, timeUnit);
+    }
+
+    @Override
+    public void zRemove(String key, Long articleId) {
+         redisTemplate.opsForZSet().remove(generateKey(key), articleId);
     }
 }
 

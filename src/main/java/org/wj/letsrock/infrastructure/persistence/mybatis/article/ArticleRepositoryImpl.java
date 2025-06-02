@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 import org.wj.letsrock.domain.article.model.dto.ArticleAdminDTO;
 import org.wj.letsrock.domain.article.model.dto.ArticleDTO;
 import org.wj.letsrock.domain.article.repository.ArticleRepository;
+import org.wj.letsrock.domain.cache.CacheKey;
+import org.wj.letsrock.enums.StatusEnum;
 import org.wj.letsrock.infrastructure.persistence.mybatis.article.mapper.ArticleDetailMapper;
 import org.wj.letsrock.infrastructure.persistence.mybatis.article.mapper.ArticleMapper;
 import org.wj.letsrock.enums.OfficialStatEnum;
@@ -27,6 +29,7 @@ import org.wj.letsrock.domain.article.model.entity.ArticleDetailDO;
 import org.wj.letsrock.domain.article.model.param.SearchArticleParams;
 import org.wj.letsrock.domain.article.converter.ArticleConverter;
 import org.wj.letsrock.domain.user.model.entity.UserDO;
+import org.wj.letsrock.utils.ExceptionUtil;
 
 import java.util.*;
 
@@ -142,15 +145,7 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
         // 作者本人和admin超管可以看到审核内容
         return user.getId().equals(article.getUserId()) || (user.getRole() != null && user.getRole().equalsIgnoreCase(UserRole.ADMIN.name()));
     }
-    @Override
-    public int increaseReadCount(Long articleId) {
-        ArticleDO record = baseMapper.selectById(articleId);
-        synchronized (record){
-            record.setReadCount(record.getReadCount() + 1);
-        }
-        baseMapper.updateById(record);
-        return record.getReadCount();
-    }
+
 
     /**
      * 按照分类统计文章的数量
@@ -270,21 +265,6 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
                 .eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .count();
     }
-
-    @Override
-    public void incrementPraiseCount(Long articleId) {
-        ArticleDO article = baseMapper.selectById(articleId);
-        article.setPraise(article.getPraise() + 1);
-        baseMapper.updateById(article);
-    }
-
-    @Override
-    public void decrementPraiseCount(Long articleId) {
-        ArticleDO article = baseMapper.selectById(articleId);
-        article.setPraise(article.getPraise() - 1);
-        baseMapper.updateById(article);
-    }
-
     @Override
     public Page<ArticleDO> listLatestArticles(PageParam pageParam) {
         Page<ArticleDO> page = new Page<>(pageParam.getPageNum(), pageParam.getPageSize());
@@ -312,5 +292,18 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
                 .orderByDesc(ArticleDO::getCreateTime);
 
         return baseMapper.selectPage(page, query);
+    }
+
+    @Override
+    public void updateArticleStatisticInfo(Long articleId, Map<String, Integer> statistics) {
+        ArticleDO article = baseMapper.selectById(articleId);
+        if(article==null){
+            throw ExceptionUtil.of(StatusEnum.ARTICLE_NOT_EXISTS, articleId);
+        }
+        article.setPraise(statistics.get(CacheKey.PRAISE_COUNT));
+        article.setCollection(statistics.get(CacheKey.COLLECTION_COUNT));
+        article.setReadCount(statistics.get(CacheKey.READ_COUNT));
+        article.setComment(statistics.get(CacheKey.COMMENT_COUNT));
+        baseMapper.updateById(article);
     }
 }

@@ -28,7 +28,6 @@ public interface ArticleRepository extends IService<ArticleDO> {
 
     boolean showReviewContent(ArticleDO article);
 
-    int increaseReadCount(Long articleId);
 
     Map<Long, Long> countArticleByCategoryId();
 
@@ -48,11 +47,10 @@ public interface ArticleRepository extends IService<ArticleDO> {
 
     Long countArticle();
 
-    void incrementPraiseCount(Long articleId);
-
-    void decrementPraiseCount(Long articleId);
 
     Page<ArticleDO> listLatestArticles(PageParam pageParam);
 
     Page<ArticleDO> listHotArticles(PageParam pageParam);
+
+    void updateArticleStatisticInfo(Long articleId, Map<String, Integer> statistics);
 }

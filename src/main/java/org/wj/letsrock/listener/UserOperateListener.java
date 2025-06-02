@@ -11,6 +11,7 @@ import org.wj.letsrock.application.notification.NotifyApplicationService;
 import org.wj.letsrock.domain.article.service.ArticleWriteService;
 import org.wj.letsrock.domain.cache.CacheKey;
 import org.wj.letsrock.domain.cache.CacheService;
+import org.wj.letsrock.domain.statistics.service.CountService;
 import org.wj.letsrock.domain.statistics.service.StatisticsService;
 import org.wj.letsrock.infrastructure.config.RabbitmqConfig;
 import org.wj.letsrock.domain.comment.model.entity.CommentDO;
@@ -31,7 +32,7 @@ public class UserOperateListener {
     @Autowired
     private NotifyApplicationService notifyService;
     @Autowired
-     private StatisticsService statisticsService;
+     private CountService  countService;
 
 
     @RabbitListener(queues = RabbitmqConfig.OPERATE_QUEUE,
@@ -50,46 +51,7 @@ public class UserOperateListener {
     @Async("notifyEventExecutor")  // 指定使用自定义的线程池
     public <T> void notifyMsgListener(NotifyMsgEvent<T> msgEvent) {
         log.info("线程: {} 处理Spring消息: \n{}",Thread.currentThread().getName(),msgEvent);
-        CommentDO comment;
-        UserRelationDO relation;
-        UserFootDO foot;
-        switch (msgEvent.getNotifyType()) {
-            case COMMENT:
-            case REPLY:
-                 comment= (CommentDO) msgEvent.getContent();
-                cacheService.hIncrement(CacheKey.ARTICLE_STATISTIC_INFO + comment.getArticleId(), CacheKey.COMMENT_COUNT, 1);
-                break;
-            case DELETE_COMMENT:
-            case DELETE_REPLY:
-                comment = (CommentDO) msgEvent.getContent();
-                cacheService.hIncrement(CacheKey.ARTICLE_STATISTIC_INFO + comment.getArticleId(), CacheKey.COMMENT_COUNT, -1);
-                break;
-            case COLLECT:
-            case CANCEL_COLLECT:
-                foot = (UserFootDO) msgEvent.getContent();
-                statisticsService.handleCollect(foot);
-                break;
-            case PRAISE:
-            case CANCEL_PRAISE:
-                foot = (UserFootDO) msgEvent.getContent();
-                statisticsService.handlePraise(foot);
-                break;
-            case FOLLOW:
-                relation = (UserRelationDO) msgEvent.getContent();
-                // 主用户粉丝数 + 1
-                cacheService.hIncrement(CacheKey.USER_STATISTIC_INFO + relation.getUserId(), CacheKey.FANS_COUNT, 1);
-                // 粉丝的关注数 + 1
-                cacheService.hIncrement(CacheKey.USER_STATISTIC_INFO + relation.getFollowUserId(), CacheKey.FOLLOW_COUNT, 1);
-                break;
-            case CANCEL_FOLLOW:
-                relation = (UserRelationDO) msgEvent.getContent();
-                // 主用户粉丝数 + 1
-                cacheService.hIncrement(CacheKey.USER_STATISTIC_INFO + relation.getUserId(), CacheKey.FANS_COUNT, -1);
-                // 粉丝的关注数 + 1
-                cacheService.hIncrement(CacheKey.USER_STATISTIC_INFO + relation.getFollowUserId(), CacheKey.FOLLOW_COUNT, -1);
-                break;
-            default:
-        }
+        countService.handleCount(msgEvent.getNotifyType(),msgEvent.getContent());
         log.info("消息处理完成");
     }
 }

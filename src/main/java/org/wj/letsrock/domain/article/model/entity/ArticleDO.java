@@ -74,6 +74,9 @@ public class ArticleDO extends BaseDO implements Serializable, Praiseable, Colle
     @ApiModelProperty(value = "收藏数")
     private Integer collection;
 
+    @ApiModelProperty(value = "评论数")
+     private Integer comment;
+
     @ApiModelProperty(value = "加精状态：0-不加精，1-加精")
     private Integer creamStat;
 

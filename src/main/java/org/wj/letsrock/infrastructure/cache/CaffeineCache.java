@@ -1,4 +1,4 @@
-package org.wj.letsrock.infrastructure.cache.local;
+package org.wj.letsrock.infrastructure.cache;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -78,6 +78,11 @@ public class CaffeineCache implements CacheService {
     }
 
     @Override
+    public void zAdd(String key, Object value, long l) {
+        throw new UnsupportedOperationException("Caffeine cache does not support sorted set operations");
+    }
+
+    @Override
     public Long sAdd(String key, Object... values) {
         throw new UnsupportedOperationException("Caffeine cache does not support set operations");
     }
@@ -130,5 +135,10 @@ public class CaffeineCache implements CacheService {
     @Override
     public void expire(String countKey, int period, TimeUnit timeUnit) {
         throw new UnsupportedOperationException("Caffeine cache does not support expire operations");
+    }
+
+    @Override
+    public void zRemove(String dirtyArticleStatistic, Long articleId) {
+        throw new UnsupportedOperationException("Caffeine cache does not support zRemove operations");
     }
 }

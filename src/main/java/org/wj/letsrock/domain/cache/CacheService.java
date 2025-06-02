@@ -28,6 +28,7 @@ public interface CacheService {
 
 
     List<ImmutablePair<String, Double>> zTopNScore(String key, int n);
+    void zAdd(String key, Object value, long l);
 
 
     // Set operations
@@ -54,4 +55,7 @@ public interface CacheService {
     Long increment(String countKey, long l);
 
     void expire(String countKey, int period, TimeUnit timeUnit);
+
+
+    void zRemove(String dirtyArticleStatistic, Long articleId);
 }

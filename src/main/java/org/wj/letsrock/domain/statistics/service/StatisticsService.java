@@ -28,15 +28,7 @@ public interface StatisticsService {
      */
     List<StatisticsDayDTO> getPvUvDayList(Integer day);
 
-    void handlePraise(UserFootDO foot);
 
-    void handleCollect(UserFootDO foot);
 
-    /**
-     * 查询文章相关的统计信息
-     *
-     * @param id
-     * @return 返回文章的 收藏、点赞、评论、阅读数
-     */
-    ArticleFootCountDTO queryArticleStatisticInfo(Long id);
+
 }
