@@ -20,7 +20,7 @@ public class CacheKey {
     /**
      * 文章相关统计信息
      */
-    public static String ARTICLE_STATISTIC_INFO = "article:statistic:";
+    public static String ARTICLE_STATISTIC_KEY = "article:statistic:";
     /**
      * 关注数
      */
@@ -56,7 +56,7 @@ public class CacheKey {
      * 评论数
      */
     public static String COMMENT_COUNT = "commentCount:";
-    public static String TAG_PREFIX = "tag:";
+    public static String TAG_KEY = "tag:";
 
     public static String LOCK_PRAISE_PREFIX =  "lock:praise:%d:%d";
     public static String lockPraiseKey(Long articleId, Long userId) {
@@ -94,6 +94,14 @@ public class CacheKey {
     }
 
     public static String categoryKey(Long categoryId) {
-        return "category:" + categoryId;
+        return CATEGORY_KEY + categoryId;
+    }
+
+    public static String tagKey(Long id) {
+        return TAG_KEY + id;
+    }
+
+    public static String articleStatisticInfo(Long id) {
+        return ARTICLE_STATISTIC_KEY + id;
     }
 }

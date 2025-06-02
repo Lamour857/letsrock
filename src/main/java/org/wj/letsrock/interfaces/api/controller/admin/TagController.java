@@ -37,7 +37,7 @@ public class TagController {
 
     //@Permission(role = UserRole.ADMIN)
     @GetMapping(path = "delete")
-    public ResultVo<String> delete(@RequestParam(name = "tagId") Integer tagId) {
+    public ResultVo<String> delete(@RequestParam(name = "tagId") Long tagId) {
         tagService.deleteTag(tagId);
         return ResultVo.ok();
     }

@@ -22,13 +22,24 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 public class ThreadPoolConfig implements AsyncConfigurer {
     @Override
-    @Bean(name = "imageTransfer")
+    @Bean(name = "asyncExecutor")
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(5);        // 核心线程数
         executor.setMaxPoolSize(10);        // 最大线程数
         executor.setQueueCapacity(100);     // 队列容量
-        executor.setThreadNamePrefix("DownloadThread-"); // 线程名前缀
+        executor.setThreadNamePrefix("asyncExecutor-"); // 线程名前缀
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean(name = "imageTransfer")
+    public Executor getImageTransfer() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(3);        // 核心线程数
+        executor.setMaxPoolSize(6);        // 最大线程数
+        executor.setQueueCapacity(100);     // 队列容量
+        executor.setThreadNamePrefix("Download-Thread-"); // 线程名前缀
         executor.initialize();
         return executor;
     }

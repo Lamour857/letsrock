@@ -24,7 +24,7 @@ import java.util.List;
 @Repository
 public class CategoryRepositoryImpl extends ServiceImpl<CategoryMapper, CategoryDO> implements CategoryRepository {
     @Override
-    public List<CategoryDO> listAllCategoriesFromDb() {
+    public List<CategoryDO> listAllCategories() {
         return lambdaQuery()
                 .eq(CategoryDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .eq(CategoryDO::getStatus, PushStatusEnum.ONLINE.getCode())

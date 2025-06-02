@@ -22,7 +22,7 @@ public class TagApplicationService {
         tagSettingService.saveTag(req);
     }
 
-    public void deleteTag(Integer tagId) {
+    public void deleteTag(Long tagId) {
         tagSettingService.deleteTag(tagId);
     }
 

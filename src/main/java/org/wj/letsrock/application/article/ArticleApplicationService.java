@@ -62,8 +62,7 @@ public class ArticleApplicationService {
     private RabbitTemplate rabbitTemplate;
     @Autowired
     private TagService tagService;
-    @Autowired
-    private CacheService cacheService;
+
     public PageResultVo<ArticleDTO> queryArticlesByCategory(Long categoryId, PageParam page){
         return articleReadService.queryArticlesByCategory(categoryId, page);
     }

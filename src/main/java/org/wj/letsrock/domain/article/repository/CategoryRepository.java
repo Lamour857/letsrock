@@ -14,7 +14,7 @@ import java.util.List;
  * @createTime: 2025-05-23-16:52
  **/
 public interface CategoryRepository extends IService<CategoryDO> {
-    List<CategoryDO> listAllCategoriesFromDb();
+    List<CategoryDO> listAllCategories();
 
     List<CategoryDTO> listCategory(SearchCategoryParams params);
 

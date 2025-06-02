@@ -5,6 +5,7 @@ import org.wj.letsrock.domain.article.model.entity.CategoryDO;
 import org.wj.letsrock.domain.article.model.param.SearchCategoryParams;
 import org.wj.letsrock.domain.article.model.request.CategoryReq;
 import org.wj.letsrock.domain.article.model.request.SearchCategoryReq;
+import org.wj.letsrock.utils.NumUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 public class CategoryConverter {
     public static CategoryDTO toDTO(CategoryDO category) {
         CategoryDTO dto = new CategoryDTO();
+
         dto.setCategory(category.getCategoryName());
         dto.setCategoryId(category.getId());
         dto.setRank(category.getRank());
@@ -29,7 +31,11 @@ public class CategoryConverter {
             return null;
         }
 
+
         CategoryDO categoryDO = new CategoryDO();
+        if (!NumUtil.nullOrZero(categoryReq.getCategoryId())) {
+            categoryDO.setId(categoryReq.getCategoryId());
+        }
 
         categoryDO.setCategoryName( categoryReq.getCategory() );
         categoryDO.setRank( categoryReq.getRank() );
