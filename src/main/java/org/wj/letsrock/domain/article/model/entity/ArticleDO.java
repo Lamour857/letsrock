@@ -27,7 +27,7 @@ import org.wj.letsrock.model.BaseDO;
 @ToString
 @Accessors(chain = true)
 @TableName("article")
-public class ArticleDO extends BaseDO implements Serializable, Praiseable, Collectable {
+public class ArticleDO extends BaseDO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -66,16 +66,16 @@ public class ArticleDO extends BaseDO implements Serializable, Praiseable, Colle
     private Integer toppingStat;
 
     @ApiModelProperty(value = "点赞数")
-    private Integer praise;
+    private Long praise;
 
      @ApiModelProperty(value = "阅读数")
-     private Integer readCount;
+     private Long readCount;
 
     @ApiModelProperty(value = "收藏数")
-    private Integer collection;
+    private Long collection;
 
     @ApiModelProperty(value = "评论数")
-     private Integer comment;
+     private Long comment;
 
     @ApiModelProperty(value = "加精状态：0-不加精，1-加精")
     private Integer creamStat;
@@ -89,28 +89,4 @@ public class ArticleDO extends BaseDO implements Serializable, Praiseable, Colle
     @ApiModelProperty(value = "文章阅读类型 0-直接阅读 1-登录阅读 2-付费阅读 3-星球")
     private Integer readType;
 
-
-    @Override
-    public Integer praise() {
-        this.setPraise( this.getPraise()+1);
-         return this.getPraise();
-    }
-
-    @Override
-    public Integer cancelPraise() {
-        this.setPraise( Math.max(this.getPraise() - 1, 0));
-         return this.getPraise();
-    }
-
-    @Override
-    public Integer collect() {
-        this.setCollection( this.getCollection()+1);
-        return this.getCollection();
-    }
-
-    @Override
-    public Integer cancelCollect() {
-        this.setCollection(Math.max(this.getCollection()-1,0));
-        return this.getCollection();
-    }
 }

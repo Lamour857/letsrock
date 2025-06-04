@@ -25,7 +25,7 @@ import org.wj.letsrock.model.BaseDO;
 @Data
 @TableName("comment")
 @ToString
-public class CommentDO extends BaseDO implements Serializable, Praiseable {
+public class CommentDO extends BaseDO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,7 +39,7 @@ public class CommentDO extends BaseDO implements Serializable, Praiseable {
     private String content;
 
      @ApiModelProperty(value = "点赞数")
-     private Integer praise;
+     private Long praise;
 
     @ApiModelProperty(value = "顶级评论ID")
     private Long topCommentId;
@@ -50,15 +50,4 @@ public class CommentDO extends BaseDO implements Serializable, Praiseable {
     @ApiModelProperty(value = "是否删除")
     private Integer deleted;
 
-    @Override
-    public Integer praise() {
-        this.setPraise(this.getPraise()+1);
-         return this.getPraise();
-    }
-
-    @Override
-    public Integer cancelPraise() {
-         this.setPraise(Math.max(this.getPraise() - 1, 0));
-          return this.getPraise();
-    }
 }
