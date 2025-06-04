@@ -1,0 +1,11 @@
+xxl:
+  job:
+    enable: false
+    admin:
+      addresses: http://localhost:8080/xxl-job-admin
+    accessToken: default_token
+    executor:
+      appname: article-statistic-job
+      port: 9999
+      logpath: /data/applogs/xxl-job/jobhandler
+      logretentiondays: 30

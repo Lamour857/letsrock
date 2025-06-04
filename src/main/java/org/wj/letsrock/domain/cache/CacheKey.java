@@ -12,13 +12,15 @@ import java.time.format.DateTimeFormatter;
 public class CacheKey {
     private static final String CATEGORY_KEY = "category:";
     public static final String RATE_LIMIT = "rate:limit:";
-    public static final String DIRTY_ARTICLE_STATISTIC = "dirty:article:statistic";
+
     public static final String BASE_KEY_PREFIX="letsrock:";
 
     private static final String USER_STATISTIC_KEY = "user:statistic:";
 
     private static final String ARTICLE_STATISTIC_KEY = "article:statistic:";
-
+    private static final String COMMENT_STATISTIC_KEY = "comment:statistic:";
+    public static final String DIRTY_ARTICLE_STATISTIC = "dirty:article:statistic";
+    public static final String DIRTY_COMMENT_STATISTIC = "dirty:comment:statistic";
     public static final String FOLLOW_COUNT = "follow:count:";
 
 
@@ -78,5 +80,9 @@ public class CacheKey {
      */
     public static String monthRankKey() {
         return ACTIVITY_SCORE_KEY + DateUtil.format(DateTimeFormatter.ofPattern("yyyyMM"), System.currentTimeMillis());
+    }
+
+    public static String commentStatisticInfo(Long documentId) {
+         return COMMENT_STATISTIC_KEY + documentId;
     }
 }

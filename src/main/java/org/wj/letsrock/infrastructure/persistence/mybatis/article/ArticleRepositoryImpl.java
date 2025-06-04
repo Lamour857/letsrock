@@ -295,7 +295,7 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
     }
 
     @Override
-    public void updateArticleStatisticInfo(Long articleId, Map<String, Integer> statistics) {
+    public void updateArticleStatisticInfo(Long articleId, Map<String, Long> statistics) {
         ArticleDO article = baseMapper.selectById(articleId);
         if(article==null){
             throw ExceptionUtil.of(StatusEnum.ARTICLE_NOT_EXISTS, articleId);

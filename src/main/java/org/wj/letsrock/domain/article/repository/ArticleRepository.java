@@ -52,5 +52,5 @@ public interface ArticleRepository extends IService<ArticleDO> {
 
     Page<ArticleDO> listHotArticles(PageParam pageParam);
 
-    void updateArticleStatisticInfo(Long articleId, Map<String, Integer> statistics);
+    void updateArticleStatisticInfo(Long articleId, Map<String, Long> statistics);
 }

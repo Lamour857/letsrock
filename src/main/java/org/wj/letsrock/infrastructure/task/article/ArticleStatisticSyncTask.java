@@ -1,14 +1,13 @@
-package org.wj.letsrock.infrastructure.task;
+package org.wj.letsrock.infrastructure.task.article;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.wj.letsrock.domain.article.repository.ArticleRepository;
 import org.wj.letsrock.domain.cache.CacheKey;
 import org.wj.letsrock.domain.cache.CacheService;
+import org.wj.letsrock.infrastructure.task.TaskHandler;
 
 import java.util.List;
 import java.util.Map;
@@ -16,23 +15,17 @@ import java.util.Map;
 /**
  * @author wujia
  * @description: TODO
- * @createTime: 2025-06-02-12:27
+ * @createTime: 2025-06-02-14:23
  **/
-@Component
 @Slf4j
-public class ArticleStatisticSyncTask {
+public abstract class ArticleStatisticSyncTask implements TaskHandler {
     @Autowired
     private CacheService cacheService;
 
     @Autowired
     private ArticleRepository articleRepository;
-
-    /**
-     * 每5分钟执行一次增量同步
-     */
-    @Scheduled(fixedRate = 60000)
-    public void syncArticleStatistic() {
-         log.info("开始执行文章统计同步任务");
+    @Override
+    public void execute() {
         try {
             // 1. 获取待更新的文章ID列表
             List<ImmutablePair<String, Double>> dirtyArticles =
@@ -47,17 +40,15 @@ public class ArticleStatisticSyncTask {
                 Long articleId = Long.valueOf(pair.getLeft());
                 try {
                     // 2. 获取缓存中的统计数据
-                    Map<String, Integer> statistics = cacheService.hGetAll(
+                    Map<String, Long> statistics = cacheService.hGetAll(
                             CacheKey.articleStatisticInfo(articleId),
-                            Integer.class
+                            Long.class
                     );
-
                     if( statistics.isEmpty()) {
                         continue;
                     }
-
                     // 3. 更新数据库
-                     articleRepository.updateArticleStatisticInfo(articleId, statistics);
+                    articleRepository.updateArticleStatisticInfo(articleId, statistics);
                     // 4. 从脏数据集合中移除
                     cacheService.zRemove(CacheKey.DIRTY_ARTICLE_STATISTIC, articleId);
 
@@ -70,7 +61,7 @@ public class ArticleStatisticSyncTask {
         } catch (Exception e) {
             log.error("文章同步失败", e);
         }finally {
-             log.info("文章同步任务结束");
+            log.info("文章同步任务结束");
         }
     }
 }

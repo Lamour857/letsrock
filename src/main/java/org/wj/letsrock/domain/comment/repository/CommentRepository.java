@@ -6,6 +6,7 @@ import org.wj.letsrock.model.vo.PageParam;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author wujia
@@ -18,4 +19,7 @@ public interface CommentRepository extends IService<CommentDO> {
     List<CommentDO> listSubCommentIdMappers(Long articleId, Collection<Long> topCommentIds);
 
     CommentDO getHotComment(Long articleId);
+    Long getCommentNumber(Long id);
+
+    void updateCommentStatisticInfo(Long commentId, Map<String, Long> statistics);
 }

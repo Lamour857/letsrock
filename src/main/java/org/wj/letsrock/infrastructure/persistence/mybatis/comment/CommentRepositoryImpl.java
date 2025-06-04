@@ -1,13 +1,17 @@
 package org.wj.letsrock.infrastructure.persistence.mybatis.comment;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
+import org.wj.letsrock.domain.cache.CacheKey;
 import org.wj.letsrock.domain.comment.model.entity.CommentDO;
 import org.wj.letsrock.domain.comment.repository.CommentRepository;
+import org.wj.letsrock.enums.StatusEnum;
 import org.wj.letsrock.enums.YesOrNoEnum;
 import org.wj.letsrock.model.vo.PageParam;
 import org.wj.letsrock.infrastructure.persistence.mybatis.comment.mapper.CommentMapper;
+import org.wj.letsrock.utils.ExceptionUtil;
 
 import java.util.Collection;
 import java.util.List;
@@ -50,5 +54,23 @@ public class CommentRepositoryImpl extends ServiceImpl<CommentMapper, CommentDO>
             return null;
         }
         return baseMapper.selectById(Long.parseLong(String.valueOf(map.get("top_comment_id"))));
+    }
+
+    @Override
+    public Long getCommentNumber(Long id) {
+        LambdaQueryWrapper<CommentDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(CommentDO::getArticleId, id)
+                .eq(CommentDO::getDeleted, YesOrNoEnum.NO.getCode());
+        return baseMapper.selectCount(queryWrapper);
+    }
+
+    @Override
+    public void updateCommentStatisticInfo(Long commentId, Map<String, Long> statistics) {
+        CommentDO comment = baseMapper.selectById(commentId);
+         if (comment == null) {
+            throw ExceptionUtil.of(StatusEnum.COMMENT_NOT_EXISTS, commentId);
+        }
+         comment.setPraise(statistics.get(CacheKey.PRAISE_COUNT));
+         baseMapper.updateById(comment);
     }
 }

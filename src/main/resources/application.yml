@@ -5,7 +5,7 @@ env:
   name: dev
 spring:
   config:
-    import: application-storage.yml
+    import: application-storage.yml, application-actuator.yml, application-rabbitmq.yml,application-task.yml
   web:
     resources:
       static-locations: file:D://letsrock

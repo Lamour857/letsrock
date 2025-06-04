@@ -1,20 +1,26 @@
 package org.wj.letsrock.domain.statistics.service.impl;
 
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.wj.letsrock.domain.article.model.entity.ArticleDO;
 import org.wj.letsrock.domain.article.repository.ArticleRepository;
 import org.wj.letsrock.domain.cache.CacheKey;
 import org.wj.letsrock.domain.cache.CacheService;
 import org.wj.letsrock.domain.comment.model.entity.CommentDO;
+import org.wj.letsrock.domain.comment.repository.CommentRepository;
+import org.wj.letsrock.domain.comment.service.CommentReadService;
 import org.wj.letsrock.domain.user.model.dto.ArticleFootCountDTO;
 import org.wj.letsrock.domain.user.model.entity.UserFootDO;
 import org.wj.letsrock.domain.user.model.entity.UserRelationDO;
 import org.wj.letsrock.domain.user.repository.UserFootRepository;
 import org.wj.letsrock.domain.statistics.service.CountService;
 import org.wj.letsrock.enums.OperateTypeEnum;
+import org.wj.letsrock.enums.article.DocumentTypeEnum;
 import org.wj.letsrock.enums.notify.NotifyTypeEnum;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author wujia
@@ -29,6 +35,10 @@ public class CountServiceImpl implements CountService {
 
     @Autowired
     private UserFootRepository userFootDao;
+    @Autowired
+    private ArticleRepository articleDao;
+    @Autowired
+    private CommentRepository commentDao;
 
 
     @Override
@@ -36,41 +46,34 @@ public class CountServiceImpl implements CountService {
         CommentDO comment;
         UserRelationDO relation;
         UserFootDO foot;
-        String key=null,field=null;
-        long dirtyId=0;
-        int delta=0;
         switch (type) {
             case COMMENT:
             case REPLY:
                 comment= (CommentDO) content;
-                key=CacheKey.articleStatisticInfo(comment.getArticleId());
-                field=CacheKey.COMMENT_COUNT;
-                delta=1;
-                dirtyId=comment.getId();
+                cacheService.hIncrement(CacheKey.articleStatisticInfo(comment.getArticleId()),CacheKey.COMMENT_COUNT,1);
+                cacheService.zAdd(CacheKey.DIRTY_ARTICLE_STATISTIC,comment.getId(),System.currentTimeMillis());
                 break;
             case DELETE_COMMENT:
             case DELETE_REPLY:
                 comment = (CommentDO) content;
-                key=CacheKey.articleStatisticInfo(comment.getArticleId());
-                field=CacheKey.COMMENT_COUNT;
-                delta=-1;
-                dirtyId=comment.getId();
+                cacheService.hIncrement(CacheKey.articleStatisticInfo(comment.getArticleId()),CacheKey.COMMENT_COUNT,-1);
+                cacheService.zAdd(CacheKey.DIRTY_ARTICLE_STATISTIC,comment.getId(),System.currentTimeMillis());
                 break;
             case COLLECT:
             case CANCEL_COLLECT:
                 foot = (UserFootDO) content;
-                key=CacheKey.articleStatisticInfo(foot.getDocumentId());
-                field=CacheKey.COLLECTION_COUNT;
-                delta=foot.getCollectionStat()==1?1:-1;
-                dirtyId=foot.getDocumentId();
+                cacheService.hIncrement(CacheKey.articleStatisticInfo(foot.getDocumentId()),CacheKey.COLLECTION_COUNT,foot.getCollectionStat()==1?1:-1);
+                cacheService.zAdd(CacheKey.DIRTY_ARTICLE_STATISTIC,foot.getDocumentId(),System.currentTimeMillis());
                 break;
             case PRAISE:
             case CANCEL_PRAISE:
                 foot = (UserFootDO) content;
-                key=CacheKey.articleStatisticInfo(foot.getDocumentId());
-                field=CacheKey.PRAISE_COUNT;
-                delta=foot.getPraiseStat()==1?1:-1;
-                dirtyId=foot.getDocumentId();
+                String key=foot.getDocumentType().equals(DocumentTypeEnum.ARTICLE.getCode())
+                        ? CacheKey.articleStatisticInfo(foot.getDocumentId()) : CacheKey.commentStatisticInfo(foot.getDocumentId());
+                cacheService.hIncrement(key,CacheKey.PRAISE_COUNT,foot.getPraiseStat()==1?1:-1);
+                String dirtyKey=foot.getDocumentType().equals(DocumentTypeEnum.ARTICLE.getCode())
+                        ? CacheKey.DIRTY_ARTICLE_STATISTIC : CacheKey.DIRTY_COMMENT_STATISTIC;
+                cacheService.zAdd(dirtyKey,foot.getDocumentId(),System.currentTimeMillis());
                 break;
             case FOLLOW:
                 relation = (UserRelationDO)content;
@@ -92,11 +95,8 @@ public class CountServiceImpl implements CountService {
                 break;
             default:
         }
-        if(key!=null){
-            cacheService.hIncrement(key,field,delta);
-            cacheService.zAdd(CacheKey.DIRTY_ARTICLE_STATISTIC,dirtyId,System.currentTimeMillis());
-        }
     }
+
 
     @Override
     public Long queryCommentPraiseCount(Long commentId) {
@@ -104,24 +104,21 @@ public class CountServiceImpl implements CountService {
     }
     @Override
     public ArticleFootCountDTO queryArticleStatisticInfo(Long id) {
-        Map<String, Integer> ans=cacheService.hGetAll(CacheKey.articleStatisticInfo(id),Integer.class);
         ArticleFootCountDTO info = new ArticleFootCountDTO();
-        if(ans.get(CacheKey.PRAISE_COUNT)==null){
-            info.setPraiseCount(0);
-            cacheService.hIncrement(CacheKey.articleStatisticInfo(id),CacheKey.PRAISE_COUNT,0);
+        Map<String, Long> ans=cacheService.hGetAll(CacheKey.articleStatisticInfo(id),Long.class);
+        if(ans.get(CacheKey.PRAISE_COUNT)==null||ans.get(CacheKey.COLLECTION_COUNT)==null||ans.get(CacheKey.COMMENT_COUNT)==null){
+            ArticleDO article = articleDao.getById(id);
+
+            ans.put(CacheKey.PRAISE_COUNT, article.getPraise());
+            ans.put(CacheKey.COLLECTION_COUNT,article.getCollection());
+            ans.put(CacheKey.COMMENT_COUNT, commentDao.getCommentNumber(id));
+            ans.put(CacheKey.READ_COUNT,article.getReadCount());
+            cacheService.hPutAll(CacheKey.articleStatisticInfo(id),ans);
         }
-        if(ans.get(CacheKey.COLLECTION_COUNT)==null){
-            info.setCollectionCount(0);
-            cacheService.hIncrement(CacheKey.articleStatisticInfo(id),CacheKey.COLLECTION_COUNT,0);
-        }
-        if(ans.get(CacheKey.COMMENT_COUNT)==null){
-            info.setCommentCount(0);
-            cacheService.hIncrement(CacheKey.articleStatisticInfo(id),CacheKey.COMMENT_COUNT,0);
-        }
-        if(ans.get(CacheKey.READ_COUNT)==null){
-            info.setReadCount(0);
-            cacheService.hIncrement(CacheKey.articleStatisticInfo(id),CacheKey.READ_COUNT,0);
-        }
+        info.setCollectionCount(ans.get(CacheKey.COLLECTION_COUNT));
+        info.setPraiseCount(ans.get(CacheKey.PRAISE_COUNT));
+        info.setCommentCount(ans.get(CacheKey.COMMENT_COUNT));
+        info.setReadCount(ans.get(CacheKey.READ_COUNT));
         return info;
     }
 
