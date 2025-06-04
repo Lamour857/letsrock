@@ -58,4 +58,6 @@ public interface CacheService {
 
 
     void zRemove(String key, Object value);
+
+    <T> void  hPutAll(String key, Map<String, T> map);
 }

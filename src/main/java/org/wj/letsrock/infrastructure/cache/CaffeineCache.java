@@ -141,4 +141,9 @@ public class CaffeineCache implements CacheService {
     public void zRemove(String key, Object value) {
         throw new UnsupportedOperationException("Caffeine cache does not support zRemove operations");
     }
+
+    @Override
+    public <T> void hPutAll(String key, Map<String, T> map) {
+         throw new UnsupportedOperationException("Caffeine cache does not support hPutAll operations");
+    }
 }

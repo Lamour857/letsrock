@@ -206,4 +206,9 @@ public class MultiLevelCache implements CacheService {
     public void zRemove(String key, Object value) {
         remoteCache.zRemove(key, value);
     }
+
+    @Override
+    public <T> void hPutAll(String key, Map<String, T> map) {
+        remoteCache.hPutAll(key, map);
+    }
 }

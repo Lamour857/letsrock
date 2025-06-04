@@ -176,7 +176,7 @@ public class RedisCache implements CacheService {
         String actualKey = generateKey(key);
         Map<Object, Object> entries = redisTemplate.opsForHash().entries(actualKey);
         if (entries.isEmpty()) {
-            return Collections.emptyMap();
+            return new HashMap<>();
         }
         Map<String, T> resultMap = new HashMap<>(entries.size());
         for (Map.Entry<Object, Object> entry : entries.entrySet()) {
@@ -190,7 +190,7 @@ public class RedisCache implements CacheService {
                 throw ExceptionUtil.of(StatusEnum.UNEXPECT_ERROR, "哈希数据解析失败");
             }
         }
-        return Collections.unmodifiableMap(resultMap);
+        return resultMap;
 
     }
 
@@ -240,6 +240,18 @@ public class RedisCache implements CacheService {
              redisTemplate.opsForZSet().remove(generateKey(key), json);
         }catch (JsonProcessingException e){
              log.warn("Failed to delete object from zSet: {}", e.getMessage());
+        }
+    }
+
+    @Override
+    public <T> void hPutAll(String key, Map<String, T> map) {
+        for( Map.Entry<String, T> entry: map.entrySet()){
+            try {
+                String jsonValue = objectMapper.writeValueAsString(entry.getValue());
+                redisTemplate.opsForHash().put(generateKey(key), entry.getKey(), jsonValue);
+            } catch (JsonProcessingException e){
+                log.warn("JSON转换异常", e);
+            }
         }
     }
 }
