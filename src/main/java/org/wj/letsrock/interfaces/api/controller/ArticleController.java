@@ -163,7 +163,7 @@ public class ArticleController extends BaseController {
             log.debug("开始点赞: {}", type);
         }
         OperateTypeEnum operate = OperateTypeEnum.fromCode(type);
-        if (operate == OperateTypeEnum.EMPTY) {
+        if (operate !=OperateTypeEnum.PRAISE&&operate!=OperateTypeEnum.CANCEL_PRAISE) {
             return ResultVo.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, type + "非法");
         }
         // 要求文章必须存在
@@ -190,7 +190,7 @@ public class ArticleController extends BaseController {
             log.debug("开始收藏: {}", type);
         }
         OperateTypeEnum operate = OperateTypeEnum.fromCode(type);
-        if (operate == OperateTypeEnum.EMPTY) {
+        if (operate != OperateTypeEnum.COLLECTION&&operate!=OperateTypeEnum.CANCEL_COLLECTION) {
             return ResultVo.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, type + "非法");
         }
         // 要求文章必须存在

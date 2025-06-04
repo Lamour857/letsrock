@@ -85,8 +85,9 @@ public class CommentController {
     @GetMapping(path = "favor")
     public ResultVo<Boolean> favor(@RequestParam(name = "commentId") Long commentId,
                                 @RequestParam(name = "type") Integer type) {
+        // 评论只有点赞、取消点赞
         OperateTypeEnum operate = OperateTypeEnum.fromCode(type);
-        if (operate == OperateTypeEnum.EMPTY) {
+        if (operate != OperateTypeEnum.PRAISE && operate != OperateTypeEnum.CANCEL_PRAISE) {
             return ResultVo.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, type + "非法");
         }
         // 要求文章必须存在
