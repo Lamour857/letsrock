@@ -68,7 +68,7 @@ public class UserFootRepositoryImpl extends ServiceImpl<UserFootMapper, UserFoot
                 .eq(UserFootDO::getDocumentType, DocumentTypeEnum.ARTICLE.getCode())
                   .eq(UserFootDO::getReadStat, ReadStatEnum.READ)
                 .orderByDesc(UserFootDO::getId);
-           return baseMapper.selectPage(page, query);
+           return this.page(page, query);
     }
     /**
      * 查询用户收藏的文章列表
@@ -85,7 +85,7 @@ public class UserFootRepositoryImpl extends ServiceImpl<UserFootMapper, UserFoot
                 .eq(UserFootDO::getDocumentType, DocumentTypeEnum.ARTICLE.getCode())
                 .eq(UserFootDO::getCollectionStat, CollectionStatEnum.COLLECTION)
                 .orderByDesc(UserFootDO::getId);
-           return baseMapper.selectPage(page, query);
+           return this.page(page, query);
     }
     @Override
     public UserFootStatisticDTO getFootCount() {

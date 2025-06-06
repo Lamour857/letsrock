@@ -64,7 +64,7 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
 
         Optional.ofNullable(categoryId).ifPresent(cid -> query.eq(ArticleDO::getCategoryId, cid));
         query.orderByDesc(ArticleDO::getToppingStat, ArticleDO::getCreateTime);
-        return baseMapper.selectPage(page, query);
+        return this.page(page, query);
 
     }
     @Override
@@ -93,7 +93,7 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
         // 按阅读量排序
         query.orderByDesc(ArticleDO::getReadCount);
 
-        return baseMapper.selectPage(page, query);
+        return this.page(page, query);
     }
     @Override
     public ArticleDTO queryArticleDetail(Long articleId) {
@@ -226,7 +226,7 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
                                 .or()
                                 .like(ArticleDO::getSummary, key));
         query.orderByDesc(ArticleDO::getId);
-        return baseMapper.selectPage(page, query);
+        return this.page(page, query);
     }
     @Override
     public Page<ArticleDO> listArticlesByUserId(Long userId, PageParam pageParam) {
@@ -240,7 +240,7 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
             // 作者本人，可以查看草稿、审核、上线文章；其他用户，只能查看上线的文章
             query.eq(ArticleDO::getStatus, PushStatusEnum.ONLINE.getCode());
         }
-        return baseMapper.selectPage(page, query);
+        return this.page(page, query);
     }
 
     /**
@@ -273,7 +273,13 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
         query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .eq(ArticleDO::getStatus, PushStatusEnum.ONLINE.getCode())
                 .orderByDesc(ArticleDO::getCreateTime);
-        return baseMapper.selectPage(page, query);
+        return this.page(page, query);
+    }
+
+    public Page<ArticleDO> testPage(PageParam pageParam) {
+        Page<ArticleDO> page = new Page<>(pageParam.getPageNum(), pageParam.getPageSize());
+        LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
+        return this.page(page, query);
     }
 
     @Override
@@ -291,7 +297,7 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
                 .orderByDesc(ArticleDO::getCollection)
                 .orderByDesc(ArticleDO::getCreateTime);
 
-        return baseMapper.selectPage(page, query);
+        return this.page(page, query);
     }
 
     @Override

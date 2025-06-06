@@ -40,7 +40,7 @@ public class TagRepositoryImpl extends ServiceImpl<TagMapper, TagDO> implements 
                 .eq(TagDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .and(StringUtils.isNotBlank(key), v -> v.like(TagDO::getTagName, key))
                 .orderByDesc(TagDO::getId);
-        Page<TagDO> pageResult = baseMapper.selectPage(page, query);
+        Page<TagDO> pageResult = this.page(page, query);
         return TagConverter.toDTOPage(pageResult);
     }
     @Override

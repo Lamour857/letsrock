@@ -71,11 +71,14 @@ public class ArticleReadServiceImpl implements ArticleReadService {
         return PageResultVo.build(result, records.getPages(), records.getTotal(), page.getPageSize());
     }
     @Override
-    public PageResultVo<ArticleDTO> queryLatestArticles(PageParam pageParam) {
+    public PageResultVo<ArticleDTO>  queryLatestArticles(PageParam pageParam) {
         Page<ArticleDO> records = articleDao.listLatestArticles(pageParam);
-         List<ArticleDTO> result = records.getRecords().stream().map(this::fillArticleRelatedInfo).collect(Collectors.toList());
-        return PageResultVo.build(result, records.getPages(), records.getTotal(), pageParam.getPageSize());
+        // List<T> list, long pageSize, long pageNum, long total
+        List<ArticleDTO> result = records.getRecords().stream().map(this::fillArticleRelatedInfo).collect(Collectors.toList());
+        return PageResultVo.build(result,  pageParam.getPageSize(), pageParam.getPageNum(),records.getTotal());
     }
+
+
 
     @Override
     public PageResultVo<ArticleDTO> queryHotArticles(PageParam pageParam) {
