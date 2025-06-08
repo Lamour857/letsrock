@@ -24,12 +24,14 @@ import org.wj.letsrock.enums.notify.NotifyTypeEnum;
 import org.wj.letsrock.infrastructure.config.RabbitmqConfig;
 import org.wj.letsrock.infrastructure.context.RequestInfoContext;
 import org.wj.letsrock.infrastructure.event.NotifyMsgEvent;
+import org.wj.letsrock.infrastructure.persistence.es.model.ArticleDocument;
 import org.wj.letsrock.model.vo.PageListVo;
 import org.wj.letsrock.model.vo.PageParam;
 import org.wj.letsrock.model.vo.PageResultVo;
 import org.wj.letsrock.utils.NumUtil;
 import org.wj.letsrock.infrastructure.utils.SpringUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -62,6 +64,8 @@ public class ArticleApplicationService {
     private RabbitTemplate rabbitTemplate;
     @Autowired
     private TagService tagService;
+    @Autowired
+    private ArticleSearchService  articleSearchService;
 
     public PageResultVo<ArticleDTO> queryArticlesByCategory(Long categoryId, PageParam page){
         return articleReadService.queryArticlesByCategory(categoryId, page);
@@ -165,6 +169,22 @@ public class ArticleApplicationService {
     }
 
     public PageResultVo<ArticleDTO> queryArticlesBySearchKey(String key, PageParam pageParam) {
+        try{
+            if(SpringUtil.getConfig("elasticsearch.enable").equals("true")){
+                PageResultVo<ArticleDocument> result = articleSearchService.searchArticles(key, pageParam);
+                if(!result.getList().isEmpty()){
+                    List<ArticleDTO> list = articleReadService.getArticleDTOList(result.getList());
+                    return PageResultVo.build(
+                            list,
+                            pageParam.getPageSize(),
+                            pageParam.getPageNum(),
+                            result.getTotal()
+                    );
+                }
+            }
+        }catch (Exception e){
+            log.warn("elastic 搜索文章异常",e);
+        }
         return articleReadService.queryArticlesBySearchKey(key, pageParam);
     }
     public PageResultVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select) {

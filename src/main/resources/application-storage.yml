@@ -18,6 +18,7 @@ spring:
     password: GDragon@0223
     driver-class-name: com.mysql.cj.jdbc.Driver
   elasticsearch:
+    enabled: true
     uris: http://127.0.0.1:9200
     username: elastic
     password: GDragon@0223

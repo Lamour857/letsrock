@@ -27,6 +27,5 @@ public interface ArticleSearchService {
     /**
      * 删除文章索引
      */
-    /
     void deleteArticleIndex(Long articleId);
 }

@@ -15,6 +15,7 @@ import org.wj.letsrock.domain.cache.CacheService;
 import org.wj.letsrock.domain.statistics.service.StatisticsService;
 import org.wj.letsrock.enums.HomeSelectEnum;
 import org.wj.letsrock.enums.StatusEnum;
+import org.wj.letsrock.infrastructure.persistence.es.model.ArticleDocument;
 import org.wj.letsrock.model.vo.PageResultVo;
 import org.wj.letsrock.utils.ArticleUtil;
 import org.wj.letsrock.model.vo.PageParam;
@@ -246,5 +247,14 @@ public class ArticleReadServiceImpl implements ArticleReadService {
         dto.setAuthorName(author.getUserName());
         dto.setAuthorAvatar(author.getAvatar());
         return dto;
+    }
+
+    @Override
+    public List<ArticleDTO> getArticleDTOList(List<ArticleDocument> list) {
+        List<ArticleDO> records = articleDao.listByIds(list.stream().map(ArticleDocument::getId).collect(Collectors.toList()));
+        if(!records.isEmpty()){
+            return records.stream().map(this::fillArticleRelatedInfo).collect(Collectors.toList());
+        }
+        return new ArrayList<>();
     }
 }

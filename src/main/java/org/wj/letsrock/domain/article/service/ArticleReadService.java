@@ -3,6 +3,7 @@ package org.wj.letsrock.domain.article.service;
 import org.wj.letsrock.domain.article.model.dto.ArticleDTO;
 import org.wj.letsrock.domain.article.model.entity.ArticleDO;
 import org.wj.letsrock.enums.HomeSelectEnum;
+import org.wj.letsrock.infrastructure.persistence.es.model.ArticleDocument;
 import org.wj.letsrock.model.vo.PageListVo;
 import org.wj.letsrock.model.vo.PageParam;
 import org.wj.letsrock.domain.article.model.dto.SimpleArticleDTO;
@@ -74,4 +75,5 @@ public interface ArticleReadService {
 
     ArticleDTO fillArticleRelatedInfo(ArticleDO record);
 
+    List<ArticleDTO> getArticleDTOList(List<ArticleDocument> list);
 }
