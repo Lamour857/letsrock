@@ -10,3 +10,10 @@ spring:
       simple:
         acknowledge-mode: auto # 自动确认模式（可选手动）
     virtual-host: /
+canal:
+  server:
+    host: localhost
+    port: 11111
+    destination: example
+    username: canal
+    password: canal
