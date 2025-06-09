@@ -49,6 +49,5 @@ public class ArticleServiceTest {
         }
         log.info("articleDTOPage: {}",articleDTOPage);
 
-
     }
 }

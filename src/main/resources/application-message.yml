@@ -1,5 +1,5 @@
 rabbitmq:
-  enable: false
+  enable: true
 spring:
   rabbitmq:
     host: localhost
@@ -9,11 +9,12 @@ spring:
     listener:
       simple:
         acknowledge-mode: auto # 自动确认模式（可选手动）
+        retry:
+          enabled: true
+          initial-interval: 1000
+          max-attempts: 3
+          max-interval: 10000
+          multiplier: 2.0
     virtual-host: /
 canal:
-  server:
-    host: localhost
-    port: 11111
-    destination: example
-    username: canal
-    password: canal
+  queue-name: canal.queue
