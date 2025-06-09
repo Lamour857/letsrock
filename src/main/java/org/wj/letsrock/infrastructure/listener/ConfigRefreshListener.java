@@ -1,4 +1,4 @@
-package org.wj.letsrock.listener;
+package org.wj.letsrock.infrastructure.listener;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

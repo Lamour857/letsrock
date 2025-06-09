@@ -1,4 +1,4 @@
-package org.wj.letsrock.listener;
+package org.wj.letsrock.infrastructure.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -6,18 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.wj.letsrock.application.notification.NotifyApplicationService;
-import org.wj.letsrock.domain.article.service.ArticleWriteService;
-import org.wj.letsrock.domain.cache.CacheKey;
 import org.wj.letsrock.domain.cache.CacheService;
 import org.wj.letsrock.domain.statistics.service.CountService;
-import org.wj.letsrock.domain.statistics.service.StatisticsService;
 import org.wj.letsrock.infrastructure.config.RabbitmqConfig;
-import org.wj.letsrock.domain.comment.model.entity.CommentDO;
+import org.wj.letsrock.infrastructure.event.CanalMessage;
 import org.wj.letsrock.infrastructure.event.NotifyMsgEvent;
 import org.wj.letsrock.domain.user.model.entity.UserFootDO;
-import org.wj.letsrock.domain.user.model.entity.UserRelationDO;
 
 /**
  * @author wujia
@@ -38,8 +33,13 @@ public class UserOperateListener {
     @RabbitListener(queues = RabbitmqConfig.OPERATE_QUEUE,
             containerFactory = "rabbitListenerContainerFactory")
     public void handleLikeMessage(NotifyMsgEvent<UserFootDO> message) {
-        log.info("线程: {} \n处理RabbitMq消息: {}",Thread.currentThread().getName(),message);
-        notifyService.saveArticleNotify(message.getContent(),message.getNotifyType());
+        try {
+            log.info("线程: {} \n处理RabbitMq消息: {}",Thread.currentThread().getName(),message);
+            notifyService.saveArticleNotify(message.getContent(),message.getNotifyType());
+        } catch (Exception e) {
+            log.error("处理operate消息失败: {}", e.getMessage(), e);
+            throw e;  // 抛出异常会触发消息重试
+        }
         log.info("处理完成");
     }
     /**
