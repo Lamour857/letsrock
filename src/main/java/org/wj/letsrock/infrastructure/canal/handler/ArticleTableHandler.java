@@ -86,8 +86,5 @@ public class ArticleTableHandler implements CanalMessageHandler {
         log.info("从ES删除文章成功, articleId: {}", article.getId());
     }
 
-    @Override
-    public boolean supports(String tableName) {
-        return "article".equals(tableName);
-    }
+
 }

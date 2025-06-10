@@ -9,5 +9,5 @@ import org.wj.letsrock.infrastructure.event.CanalMessage;
  **/
 public interface CanalMessageHandler {
     void handle(CanalMessage message);
-    boolean supports(String tableName);
+
 }
