@@ -2,6 +2,7 @@ package org.wj.letsrock.model.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.data.domain.Pageable;
 
 /**
  * @author wujia
@@ -9,7 +10,7 @@ import lombok.Data;
  * @createTime: 2025-04-19-15:32
  **/
 @Data
-public class PageParam {
+public class PageParam  {
     public static final Long DEFAULT_PAGE_NUM = 1L;
     public static final Long DEFAULT_PAGE_SIZE = 10L;
 

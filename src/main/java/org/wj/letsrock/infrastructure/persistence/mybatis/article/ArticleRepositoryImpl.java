@@ -234,7 +234,6 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
         LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
         query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .eq(ArticleDO::getUserId, userId)
-                .last(PageParam.getLimitSql(pageParam))
                 .orderByDesc(ArticleDO::getId);
         if (!Objects.equals(RequestInfoContext.getReqInfo().getUserId(), userId)) {
             // 作者本人，可以查看草稿、审核、上线文章；其他用户，只能查看上线的文章
@@ -242,6 +241,7 @@ public class ArticleRepositoryImpl extends ServiceImpl<ArticleMapper, ArticleDO>
         }
         return this.page(page, query);
     }
+
 
     /**
      * 后台文章列表
