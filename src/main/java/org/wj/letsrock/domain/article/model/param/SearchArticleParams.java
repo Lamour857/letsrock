@@ -30,7 +30,7 @@ public class SearchArticleParams extends PageParam {
     /**
      * 作者名称
      */
-    private String userName;
+    private String username;
 
     /**
      * 文章状态: 0-未发布，1-已发布，2-审核

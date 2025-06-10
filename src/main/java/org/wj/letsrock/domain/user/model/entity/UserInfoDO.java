@@ -27,7 +27,7 @@ public class UserInfoDO extends BaseDO {
     /**
      * 用户名
      */
-    private String userName;
+    private String username;
 
     /**
      * 用户图像

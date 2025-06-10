@@ -81,7 +81,7 @@ public class ArticleApplicationService {
 
 
         BaseUserInfoDTO user = userService.queryBasicUserInfo(articleDTO.getAuthor());
-        articleDTO.setAuthorName(user.getUserName());
+        articleDTO.setAuthorName(user.getUsername());
         articleDTO.setAuthorAvatar(user.getAvatar());
 
         boolean isFollowed = userRelationService.isFallowed(articleDTO.getAuthor(), RequestInfoContext.getReqInfo().getUserId());

@@ -244,7 +244,7 @@ public class ArticleReadServiceImpl implements ArticleReadService {
         dto.setCount(countService.queryArticleStatisticInfo(record.getId()));
         // 作者信息
         BaseUserInfoDTO author = userService.queryBasicUserInfo(dto.getAuthor());
-        dto.setAuthorName(author.getUserName());
+        dto.setAuthorName(author.getUsername());
         dto.setAuthorAvatar(author.getAvatar());
         return dto;
     }

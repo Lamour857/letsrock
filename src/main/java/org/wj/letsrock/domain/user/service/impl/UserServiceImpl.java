@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
         }
         return users.stream().map(s -> new SimpleUserInfoDTO()
                         .setUserId(s.getUserId())
-                        .setName(s.getUserName())
+                        .setName(s.getUsername())
                         .setAvatar(s.getAvatar())
                         .setProfile(s.getProfile())
                 )
@@ -98,6 +98,7 @@ public class UserServiceImpl implements UserService {
 
         return DateUtil.calculateDaysSince(user.getCreateTime());
     }
+
 
     @Override
     public void saveAvatar(UserInfoDO user, String imageUrl) {

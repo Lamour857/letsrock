@@ -57,8 +57,8 @@ public class UserRepositoryImpl extends ServiceImpl<UserInfoMapper, UserInfoDO> 
         if (StringUtils.isEmpty(user.getAvatar())) {
             user.setAvatar(null);
         }
-        if (StringUtils.isEmpty(user.getUserName())) {
-            user.setUserName(null);
+        if (StringUtils.isEmpty(user.getUsername())) {
+            user.setUsername(null);
         }
         if (StringUtils.isEmpty(user.getEmail())) {
             user.setEmail(null);
@@ -94,11 +94,11 @@ public class UserRepositoryImpl extends ServiceImpl<UserInfoMapper, UserInfoDO> 
      * 根据用户名来查询
      */
     @Override
-    public List<UserInfoDO> getByUserNameLike(String userName) {
+    public List<UserInfoDO> getByUserNameLike(String username) {
         LambdaQueryWrapper<UserInfoDO> query = Wrappers.lambdaQuery();
-        query.select(UserInfoDO::getUserId, UserInfoDO::getUserName, UserInfoDO::getAvatar, UserInfoDO::getProfile)
-                .and(!StringUtils.isEmpty(userName),
-                        v -> v.like(UserInfoDO::getUserName, userName)
+        query.select(UserInfoDO::getUserId, UserInfoDO::getUsername, UserInfoDO::getAvatar, UserInfoDO::getProfile)
+                .and(!StringUtils.isEmpty(username),
+                        v -> v.like(UserInfoDO::getUsername, username)
                 )
                 .eq(UserInfoDO::getDeleted, YesOrNoEnum.NO.getCode());
         return baseMapper.selectList(query);

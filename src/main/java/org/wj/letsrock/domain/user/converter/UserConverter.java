@@ -33,7 +33,7 @@ public class UserConverter {
 
     public static SimpleUserInfoDTO toSimpleInfo(UserInfoDO info) {
         return new SimpleUserInfoDTO().setUserId(info.getUserId())
-                .setName(info.getUserName())
+                .setName(info.getUsername())
                 .setAvatar(info.getAvatar())
                 .setProfile(info.getProfile());
     }
@@ -54,7 +54,7 @@ public class UserConverter {
         }
         UserInfoDO userInfoDO = new UserInfoDO();
         userInfoDO.setUserId(req.getUserId());
-        userInfoDO.setUserName(req.getUserName());
+        userInfoDO.setUsername(req.getUsername());
         userInfoDO.setAvatar(req.getPhoto());
         userInfoDO.setProfile(req.getProfile());
         userInfoDO.setEmail(req.getEmail());
