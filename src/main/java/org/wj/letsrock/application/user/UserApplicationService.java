@@ -146,4 +146,8 @@ public class UserApplicationService {
         userStatisticInfoDTO.setJoinDayCount(userService.getJoinDayCount(userId));
         return userStatisticInfoDTO;
     }
+
+    public boolean isFollow(Long userId, Long followUserId) {
+        return userRelationService.isFallowed(userId, followUserId);
+    }
 }
