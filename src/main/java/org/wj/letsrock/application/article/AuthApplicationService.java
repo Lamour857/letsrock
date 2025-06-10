@@ -1,10 +1,12 @@
 package org.wj.letsrock.application.article;
 
+import org.apache.zookeeper.Login;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.wj.letsrock.domain.cache.CacheKey;
 import org.wj.letsrock.domain.cache.CacheService;
+import org.wj.letsrock.domain.user.model.dto.LoginResponseDTO;
 import org.wj.letsrock.domain.user.model.entity.UserDO;
 import org.wj.letsrock.domain.user.model.request.UserAuthReq;
 import org.wj.letsrock.domain.user.repository.UserRepository;
@@ -31,7 +33,8 @@ public class AuthApplicationService {
     private JwtService  jwtService;
     @Autowired
     private CacheService cacheService;
-    public String login(UserAuthReq req) {
+    public LoginResponseDTO login(UserAuthReq req) {
+        LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
         UserDO user = userRepository.getUserByUserName(req.getUsername());
         if(user == null){
             throw ExceptionUtil.of(StatusEnum.USER_NOT_EXISTS);
@@ -47,6 +50,9 @@ public class AuthApplicationService {
         // 若该用户 存在旧token，则删除
         oldToken.ifPresent(s -> cacheService.remove(CacheKey.tokenCacheKey(s)));
         cacheService.put(CacheKey.userLoginToken(user.getId()), token, jwtService.getExpiration(),  TimeUnit.MILLISECONDS);
-        return token;
+
+        loginResponseDTO.setToken(token);
+        loginResponseDTO.setUserId(user.getId());
+        return loginResponseDTO;
     }
 }
