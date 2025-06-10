@@ -5,7 +5,7 @@
     <select id="listSimpleUserInfosByArticleId"
             resultType="org.wj.letsrock.domain.user.model.dto.SimpleUserInfoDTO">
         SELECT ui.user_id as userId,
-               ui.user_name as name,
+               ui.username as name,
                ui.avatar as avatar
         FROM user_foot uf
                  left join user_info ui on uf.user_id = ui.user_id

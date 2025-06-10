@@ -11,7 +11,7 @@
     <select id="listArticleRelatedNotices" resultType="org.wj.letsrock.domain.notify.model.dto.NotifyMsgDTO">
         select m.id as msgId,
         m.operate_user_id as operateUserId,
-        u.user_name as operateUserName,
+        u.username as operateUserName,
         u.avatar as operateUserPhoto,
         m.msg as msg,
         m.type as type,
@@ -31,7 +31,7 @@
     <select id="listNormalNotices" resultType="org.wj.letsrock.domain.notify.model.dto.NotifyMsgDTO">
         select m.id as msgId,
         m.operate_user_id as operateUserId,
-        u.user_name as operateUserName,
+        u.username as operateUserName,
         u.avatar as operateUserPhoto,
         m.msg as msg,
         m.type as type,
