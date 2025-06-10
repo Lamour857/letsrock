@@ -119,13 +119,13 @@ public class CommentReadServiceImpl implements CommentReadService {
         BaseUserInfoDTO userInfoDO = userService.queryBasicUserInfo(comment.getUserId());
         if (userInfoDO == null) {
             // 如果用户注销，给一个默认的用户
-            comment.setUserName("默认用户");
+            comment.setUsername("默认用户");
             comment.setUserPhoto("");
             if (comment instanceof TopCommentDTO) {
                 ((TopCommentDTO) comment).setCommentCount(0);
             }
         } else {
-            comment.setUserName(userInfoDO.getUserName());
+            comment.setUsername(userInfoDO.getUsername());
             comment.setUserPhoto(userInfoDO.getAvatar());
             if (comment instanceof TopCommentDTO) {
                 ((TopCommentDTO) comment).setCommentCount(((TopCommentDTO) comment).getChildComments().size());

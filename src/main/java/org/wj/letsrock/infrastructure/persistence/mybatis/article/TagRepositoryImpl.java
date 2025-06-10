@@ -53,13 +53,14 @@ public class TagRepositoryImpl extends ServiceImpl<TagMapper, TagDO> implements 
     }
     @Override
     public List<TagDO> listTag(SearchTagParams params) {
-        List<TagDO> list = createTagQuery(params)
-                .orderByDesc(TagDO::getUpdateTime)
-                .last(PageParam.getLimitSql(
-                        PageParam.newPageInstance(params.getPageNum(), params.getPageSize())
-                ))
-                .list();
-        return list;
+        // todo 分页优化
+//        List<TagDO> list = createTagQuery(params)
+//                .orderByDesc(TagDO::getUpdateTime)
+//                .last(PageParam.getLimitSql(
+//                        PageParam.newPageInstance(params.getPageNum(), params.getPageSize())
+//                ))
+//                .list();
+        return null;
     }
 
     /**
