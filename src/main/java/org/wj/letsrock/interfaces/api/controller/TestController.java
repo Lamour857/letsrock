@@ -16,20 +16,20 @@ import org.wj.letsrock.domain.user.model.entity.UserFootDO;
  * @description: TODO
  * @createTime: 2025-04-23-15:18
  **/
-@RequestMapping("/test")
-@RestController
-public class TestController {
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-    @GetMapping("/rabbitmq")
-    ResultVo<String> testRabbitmq(){
-        UserFootDO foot=new UserFootDO();
-        NotifyTypeEnum notifyType=NotifyTypeEnum.PRAISE;
-        rabbitTemplate.convertAndSend(
-                RabbitmqConfig.OPERATE_EXCHANGE,
-                RabbitmqConfig.OPERATE_ROUTING_KEY,
-                new NotifyMsgEvent<>(this, notifyType, foot)
-        );
-        return ResultVo.ok();
-    }
-}
+//@RequestMapping("/test")
+//@RestController
+//public class TestController {
+//    @Autowired
+//    private RabbitTemplate rabbitTemplate;
+//    @GetMapping("/rabbitmq")
+//    ResultVo<String> testRabbitmq(){
+//        UserFootDO foot=new UserFootDO();
+//        NotifyTypeEnum notifyType=NotifyTypeEnum.PRAISE;
+//        rabbitTemplate.convertAndSend(
+//                RabbitmqConfig.OPERATE_EXCHANGE,
+//                RabbitmqConfig.OPERATE_ROUTING_KEY,
+//                new NotifyMsgEvent<>(this, notifyType, foot)
+//        );
+//        return ResultVo.ok();
+//    }
+//}

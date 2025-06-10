@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wj.letsrock.application.article.ArticleApplicationService;
 import org.wj.letsrock.common.BaseController;
+import org.wj.letsrock.infrastructure.security.annotation.AnonymousAccess;
 import org.wj.letsrock.model.vo.PageListVo;
 import org.wj.letsrock.model.vo.PageParam;
 import org.wj.letsrock.model.vo.PageResultVo;
@@ -31,9 +32,9 @@ public class SearchController extends BaseController {
 
     /**
      * 根据关键词给出搜索下拉框
-     *
-     * @param key
+     * @param key 关键字
      */
+    @AnonymousAccess
     @GetMapping(path = "hint")
     public ResultVo<SearchArticleDTO> recommend(@RequestParam(name = "key", required = false) String key) {
         return ResultVo.ok(articleService.querySimpleArticleBySearchKey(key));
@@ -41,11 +42,10 @@ public class SearchController extends BaseController {
 
     /**
      * 分类下的文章列表
-     *
-     * @param key
-     * @return
+     * @param key 关键字
      */
     @GetMapping(path = "list")
+    @AnonymousAccess
     public ResultVo<PageResultVo<ArticleDTO>> searchList(@RequestParam(name = "key", required = false) String key,
                                                     @RequestParam(name = "page") Long page,
                                                     @RequestParam(name = "size", required = false) Long size) {

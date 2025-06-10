@@ -2,6 +2,7 @@ package org.wj.letsrock.interfaces.api.controller.admin;
 
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.wj.letsrock.application.config.ConfigApplicationService;
 import org.wj.letsrock.enums.StatusEnum;
@@ -19,7 +20,7 @@ import org.wj.letsrock.domain.config.service.ConfigSettingService;
  * @createTime: 2025-04-26-12:44
  **/
 @RestController
-////@Permission(role = UserRole.LOGIN)
+@PreAuthorize("hasRole('admin')")
 @Api(value = "后台运营配置管理控制器", tags = "配置管理")
 @RequestMapping(path = { "admin/config/"})
 public class ConfigSettingController {

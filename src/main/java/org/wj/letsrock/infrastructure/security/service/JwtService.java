@@ -7,6 +7,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,13 +38,13 @@ public class JwtService {
 
     @Autowired
     private CacheService cacheService;
-    @Autowired
-    private UserDetailsService userDetailsService;
+
 
     @Value("${jwt.secret}")
     private String secret;
 
     @Value("${jwt.expiration}")
+    @Getter
     private Long expiration;
     @Value("${jwt.issuer}")
     private String issuer;
@@ -67,8 +68,7 @@ public class JwtService {
         claims.put("userId", user.getId());
         //claims.put("roles", user.getRoles().getId());
         String token=createToken(claims);
-        // token缓存 key: token ->value: userDO
-        cacheService.put(CacheKey.tokenCacheKey(token), user, expiration,  TimeUnit.MILLISECONDS);
+
         return token;
     }
 

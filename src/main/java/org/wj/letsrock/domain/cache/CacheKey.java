@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
  * @createTime: 2025-05-27-12:40
  **/
 public class CacheKey {
+
     private static final String CATEGORY_KEY = "category:";
     public static final String RATE_LIMIT = "rate:limit:";
 
@@ -42,6 +43,7 @@ public class CacheKey {
     public static final String COMMENT_COUNT = "comment:count:";
     private static final String TAG_KEY = "tag:";
     private static final String ACTIVITY_SCORE_KEY = "activity:rank:";
+    private static final String USER_LOGIN_TOKEN = "user:login:count";
     public static final String ARTICLE_WHITE_LIST = "auth:article:white:list";
 
     private static final String TOKEN_CACHE_KEY = "token:";
@@ -84,5 +86,9 @@ public class CacheKey {
 
     public static String commentStatisticInfo(Long documentId) {
          return COMMENT_STATISTIC_KEY + documentId;
+    }
+
+    public static String userLoginToken(Long id) {
+        return USER_LOGIN_TOKEN + id;
     }
 }

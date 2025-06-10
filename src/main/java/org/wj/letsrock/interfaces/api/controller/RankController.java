@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wj.letsrock.application.user.UserApplicationService;
 import org.wj.letsrock.domain.user.service.UserService;
 import org.wj.letsrock.enums.ActivityRankTimeEnum;
+import org.wj.letsrock.infrastructure.security.annotation.AnonymousAccess;
 import org.wj.letsrock.model.vo.ResultVo;
 import org.wj.letsrock.domain.user.model.dto.RankInfoDTO;
 import org.wj.letsrock.domain.user.model.dto.RankItemDTO;
@@ -31,6 +32,7 @@ public class RankController {
      * @param model
      * @return
      */
+    @AnonymousAccess
     @RequestMapping(path = "/rank/{time}")
     public ResultVo<RankInfoDTO> rank(@PathVariable(value = "time") String time) {
         return ResultVo.ok(userService.queryUserRank(time));

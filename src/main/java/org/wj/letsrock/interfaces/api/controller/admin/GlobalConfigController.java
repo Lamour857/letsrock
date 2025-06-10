@@ -2,6 +2,7 @@ package org.wj.letsrock.interfaces.api.controller.admin;
 
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.wj.letsrock.application.config.ConfigApplicationService;
 import org.wj.letsrock.model.vo.PageResultVo;
@@ -19,6 +20,7 @@ import org.wj.letsrock.domain.config.service.GlobalConfigService;
 @RestController
 @Api(value = "全局配置管理控制器", tags = "全局配置")
 @RequestMapping(path = {"admin/global/config/"})
+@PreAuthorize("hasRole('admin')")
 public class GlobalConfigController {
 
     @Autowired

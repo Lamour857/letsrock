@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import org.wj.letsrock.infrastructure.context.RequestInfoContext;
 import org.wj.letsrock.enums.FollowTypeEnum;
 import org.wj.letsrock.enums.HomeSelectEnum;
 import org.wj.letsrock.enums.StatusEnum;
+import org.wj.letsrock.infrastructure.security.annotation.AnonymousAccess;
 import org.wj.letsrock.infrastructure.security.token.AuthenticationToken;
 import org.wj.letsrock.model.vo.PageListVo;
 import org.wj.letsrock.model.vo.PageParam;
@@ -58,7 +60,7 @@ public class UserController {
      *
      * @param req
      */
-    //@Permission(role = UserRole.LOGIN)
+    @PreAuthorize("hasRole('user')")
     @PostMapping(path = "saveUserRelation")
     public ResultVo<Boolean> saveUserRelation(@RequestBody UserRelationReq req) {
         log.info("保存用户关系");
@@ -68,6 +70,7 @@ public class UserController {
         userService.saveUserRelation(req);
         return ResultVo.ok(true);
     }
+    @PreAuthorize("hasRole('user')")
     @PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResultVo<String> uploadImage(  @RequestParam("file") MultipartFile file){
         StopWatchUtil stopWatch = new StopWatchUtil("上传图片");
@@ -87,12 +90,8 @@ public class UserController {
     }
     /**
      * 保存用户详情
-     *
-     * @param req
-     * @return
-     * @throws Exception
      */
-    //@Permission(role = UserRole.LOGIN)
+    @PreAuthorize("hasRole('user')")
     @PostMapping(path = "saveUserInfo")
     @Transactional(rollbackFor = Exception.class)
     public ResultVo<Boolean> saveUserInfo(@RequestBody UserInfoSaveReq req) {
@@ -106,10 +105,8 @@ public class UserController {
     /**
      * 用户的文章列表翻页
      * todo  翻页优化
-     * @param userId
-     * @param homeSelectType
-     * @return
      */
+    @PreAuthorize("hasRole('user')")
     @GetMapping(path = "article")
     public ResultVo<PageResultVo<ArticleDTO>> articleList(@RequestParam(name = "userId") Long userId,
                                              @RequestParam(name = "homeSelectType") String homeSelectType,
@@ -130,6 +127,7 @@ public class UserController {
     /**
      * 获取用户关注列表
      */
+    @PreAuthorize("hasRole('user')")
     @GetMapping(path = "follow")
     public ResultVo<PageListVo<FollowUserInfoDTO>> followList(@RequestParam(name = "userId") Long userId,
                                             @RequestParam(name = "followSelectType") String followSelectType,
@@ -142,6 +140,7 @@ public class UserController {
     }
 
     @ApiOperation("获取当前登录用户信息")
+    @PreAuthorize("hasRole('user')")
     @GetMapping("info")
     public ResultVo<BaseUserInfoDTO> info() {
         BaseUserInfoDTO user = userService.queryUserInfo(RequestInfoContext.getReqInfo().getUserId());
@@ -149,6 +148,7 @@ public class UserController {
     }
 
     @ApiOperation("用户搜索")
+    @AnonymousAccess
     @GetMapping(path = "query")
     public ResultVo<SearchUserDTO> queryUserList(@RequestParam(name = "key", required = false) String key) {
 
@@ -157,6 +157,7 @@ public class UserController {
     }
 
     @ApiOperation("用户基本数据")
+    @AnonymousAccess
     @GetMapping(path = "statistic")
     public ResultVo<UserStatisticInfoDTO> queryUserStatisticInfo(@RequestParam(name = "userId" ,required = false) Long userId) {
         UserStatisticInfoDTO vo = userService.queryUserStatisticInfo(userId);

@@ -96,7 +96,7 @@ public class UserApplicationService {
     public void saveAvatar(String imageUrl) {
         UserInfoDO userInfoDO = userService.getByUserId(RequestInfoContext.getReqInfo().getUserId());
         String avatar=userInfoDO.getAvatar();
-        log.info("用户:{} 保存头像，原头像为：{}",userInfoDO.getUserName(),avatar);
+        log.info("用户:{} 保存头像，原头像为：{}",userInfoDO.getUsername(),avatar);
         if(StringUtil.isNullOrEmpty(avatar)){
             // 原头像为空
             userService.saveAvatar(userInfoDO, imageUrl);
@@ -115,7 +115,11 @@ public class UserApplicationService {
     }
 
     public BaseUserInfoDTO queryUserInfo(Long userId) {
-        return userService.queryBasicUserInfo(userId);
+        BaseUserInfoDTO user = userService.queryBasicUserInfo(userId);
+        if(userId.equals(RequestInfoContext.getReqInfo().getUserId())){
+            user.setRole(RequestInfoContext.getReqInfo().getUser().getRole());
+        }
+        return user;
     }
 
     public UserStatisticInfoDTO queryUserStatisticInfo(Long userId) {

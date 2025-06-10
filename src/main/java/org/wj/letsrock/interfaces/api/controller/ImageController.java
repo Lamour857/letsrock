@@ -2,6 +2,7 @@ package org.wj.letsrock.interfaces.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +26,7 @@ public class ImageController {
     @Autowired
     private ImageService imageService;
 
+    @PreAuthorize("hasRole('user')")
     @PostMapping(value = "/image/row", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResultVo<String> uploadImage(  @RequestParam("file") MultipartFile file){
         StopWatchUtil stopWatch = new StopWatchUtil("上传图片");

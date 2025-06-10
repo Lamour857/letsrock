@@ -1,11 +1,13 @@
 package org.wj.letsrock.interfaces.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.wj.letsrock.application.article.ArticleApplicationService;
 import org.wj.letsrock.application.comment.CommentApplicationService;
 import org.wj.letsrock.enums.OperateTypeEnum;
 import org.wj.letsrock.enums.StatusEnum;
+import org.wj.letsrock.infrastructure.security.annotation.AnonymousAccess;
 import org.wj.letsrock.utils.NumUtil;
 import org.wj.letsrock.model.vo.PageParam;
 import org.wj.letsrock.model.vo.ResultVo;
@@ -34,7 +36,7 @@ public class CommentController {
      * 评论列表页
      * @param articleId 文章id
      */
-    @ResponseBody
+    @AnonymousAccess
     @RequestMapping(path = "list")
     public ResultVo<List<TopCommentDTO>> list(Long articleId, Long pageNum, Long pageSize) {
         if (NumUtil.nullOrZero(articleId)) {
@@ -48,11 +50,9 @@ public class CommentController {
     /**
      * 保存评论
      * @param req 请求参数
-     * @return
      */
-    //@Permission(role = UserRole.LOGIN)
+    @PreAuthorize("hasRole('user')")
     @PostMapping(path = "post")
-    @ResponseBody
     public ResultVo<ArticleDetailDTO> save(@RequestBody CommentSaveReq req) {
         if (req.getArticleId() == null) {
             return ResultVo.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, "文章id为空");
@@ -65,10 +65,9 @@ public class CommentController {
     }
     /**
      * 删除评论
-     *
      * @param commentId 评论id
      */
-    //@Permission(role = UserRole.LOGIN)
+    @PreAuthorize("hasRole('user')")
     @RequestMapping(path = "delete")
     public ResultVo<Boolean> delete(Long commentId) {
         commentService.deleteComment(commentId);
@@ -77,11 +76,10 @@ public class CommentController {
 
     /**
      * 收藏、点赞等相关操作
-     *
      * @param commentId 评论id
      * @param type      取值来自于 OperateTypeEnum#code
      */
-    //@Permission(role = UserRole.LOGIN)
+    @PreAuthorize("hasRole('user')")
     @GetMapping(path = "favor")
     public ResultVo<Boolean> favor(@RequestParam(name = "commentId") Long commentId,
                                 @RequestParam(name = "type") Integer type) {

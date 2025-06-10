@@ -2,6 +2,7 @@ package org.wj.letsrock.interfaces.api.controller.admin;
 
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.wj.letsrock.model.vo.ResultVo;
 import org.wj.letsrock.domain.statistics.model.dto.StatisticsCountDTO;
@@ -18,6 +19,7 @@ import java.util.List;
 @RestController
 @Api(value = "全栈统计分析控制器", tags = "统计分析")
 @RequestMapping(path = {"admin/statistics/"})
+@PreAuthorize("hasRole('admin')")
 public class StatisticsController {
     @Autowired
     private StatisticsService statisticsService;

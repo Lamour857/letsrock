@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.wj.letsrock.application.article.ColumnApplicationService;
 import org.wj.letsrock.domain.article.model.request.*;
@@ -28,9 +29,9 @@ import java.util.List;
  **/
 @RestController
 @Slf4j
-//@Permission(role = UserRole.LOGIN)
 @Api(value = "专栏及专栏文章管理控制器", tags = "专栏管理")
 @RequestMapping(path = { "admin/column/"})
+@PreAuthorize("hasRole('admin')")
 public class ColumnSettingController {
     @Autowired
     private ColumnApplicationService  columnService;
