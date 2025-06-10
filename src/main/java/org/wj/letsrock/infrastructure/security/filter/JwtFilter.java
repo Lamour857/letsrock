@@ -71,7 +71,8 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/webjars",
             "/api/swagger-resources",
             "/api/v2/api-docs",
-            "/api/favicon.ico"
+            "/api/favicon.ico",
+            "/image"
     };
     private boolean isAnonymousAccess(String requestURI) {
         return anonymousUrls.stream()
@@ -91,6 +92,7 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request,response);
             return;
         }
+        log.debug("token: {}",token);
         AuthenticationToken authenticationToken =jwtService.getAuthentication(token);
         if(authenticationToken!=null){
             // token有效, 设置SecurityContext
