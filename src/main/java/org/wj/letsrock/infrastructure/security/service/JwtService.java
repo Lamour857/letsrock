@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 import org.wj.letsrock.domain.cache.CacheKey;
 import org.wj.letsrock.domain.cache.CacheService;
+import org.wj.letsrock.infrastructure.security.token.RolePermission;
 import org.wj.letsrock.utils.JsonUtil;
 import org.wj.letsrock.infrastructure.security.token.AuthenticationToken;
 import org.wj.letsrock.domain.user.model.entity.UserDO;
@@ -99,8 +100,9 @@ public class JwtService {
                 return null;
             }
             // 根据用户名读取用户信息
-            //userInRedis.setRoles(userDao.getUserRole(userInRedis.getRoleId()));
-            authenticationToken=new AuthenticationToken();
+            List<RolePermission> roles=new ArrayList<>();
+            roles.add(new RolePermission(userInRedis.get().getRole()));
+            authenticationToken=new AuthenticationToken(roles);
             authenticationToken.setAuthenticated(true);
             authenticationToken.setToken(token);
             authenticationToken.setUser(userInRedis.get());

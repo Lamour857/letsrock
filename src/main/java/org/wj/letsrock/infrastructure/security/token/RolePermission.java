@@ -7,9 +7,9 @@ import org.springframework.security.core.GrantedAuthority;
  * @description: TODO
  * @createTime: 2025-02-05-17:11
  **/
-public class CustomPermission implements GrantedAuthority {
+public class RolePermission implements GrantedAuthority {
     private String authority;
-    public CustomPermission(String authority){
+    public RolePermission(String authority){
         this.authority=authority;
     }
     @Override
