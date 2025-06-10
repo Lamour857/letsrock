@@ -31,7 +31,7 @@ public class NoticeController {
      * @param page 页号
      * @param pageSize 页大小
      */
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('admin','user')")
     @RequestMapping(path = "list")
     public ResultVo<PageListVo<NotifyMsgDTO>> list(@RequestParam(name = "type") String type,
                                                    @RequestParam("page") Long page,

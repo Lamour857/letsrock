@@ -159,7 +159,7 @@ public class ArticleController extends BaseController {
      * @param type      取值来自于 OperateTypeEnum#code
      * @return
      */
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('admin','user')")
     @RateLimit (key = "article:favor:", spEl = "T(org.wj.letsrock.infrastructure.context.RequestInfoContext).getReqInfo().getUserId() + ':' + #articleId + ':'")
     @GetMapping(path = "favor")
     @MdcDot(bizCode = "#articleId")
@@ -185,7 +185,7 @@ public class ArticleController extends BaseController {
      * @param articleId 文章id
      * @param type      取值来自于 OperateTypeEnum#code
      */
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('admin','user')")
     @RateLimit (key = "article:collect:", spEl = "T(org.wj.letsrock.infrastructure.context.RequestInfoContext).getReqInfo().getUserId() + ':' + #articleId + ':'")
     @GetMapping(path = "collect")
     @MdcDot(bizCode = "#articleId")
@@ -212,7 +212,7 @@ public class ArticleController extends BaseController {
      * 发布文章，返回文章id以便跳转
      * @return
      */
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('admin','user')")
     @PostMapping(path = "post")
     @MdcDot(bizCode = "#req.articleId")
     public ResultVo<Long> post(@RequestBody ArticlePostReq req){
@@ -223,7 +223,7 @@ public class ArticleController extends BaseController {
      * 文章删除
      * @param articleId 文章id
      */
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('admin','user')")
     @RequestMapping(path = "delete")
     @MdcDot(bizCode = "#articleId")
     public ResultVo<Boolean> delete(@RequestParam(value = "articleId") Long articleId) {

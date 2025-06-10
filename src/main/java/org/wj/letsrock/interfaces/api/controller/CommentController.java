@@ -51,7 +51,7 @@ public class CommentController {
      * 保存评论
      * @param req 请求参数
      */
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('admin','user')")
     @PostMapping(path = "post")
     public ResultVo<ArticleDetailDTO> save(@RequestBody CommentSaveReq req) {
         if (req.getArticleId() == null) {
@@ -67,7 +67,7 @@ public class CommentController {
      * 删除评论
      * @param commentId 评论id
      */
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('admin','user')")
     @RequestMapping(path = "delete")
     public ResultVo<Boolean> delete(Long commentId) {
         commentService.deleteComment(commentId);
@@ -79,7 +79,7 @@ public class CommentController {
      * @param commentId 评论id
      * @param type      取值来自于 OperateTypeEnum#code
      */
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('admin','user')")
     @GetMapping(path = "favor")
     public ResultVo<Boolean> favor(@RequestParam(name = "commentId") Long commentId,
                                 @RequestParam(name = "type") Integer type) {

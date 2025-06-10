@@ -60,7 +60,7 @@ public class UserController {
      *
      * @param req
      */
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('admin','user')")
     @PostMapping(path = "saveUserRelation")
     public ResultVo<Boolean> saveUserRelation(@RequestBody UserRelationReq req) {
         log.info("保存用户关系");
@@ -70,7 +70,7 @@ public class UserController {
         userService.saveUserRelation(req);
         return ResultVo.ok(true);
     }
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('admin','user')")
     @PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResultVo<String> uploadImage(  @RequestParam("file") MultipartFile file){
         StopWatchUtil stopWatch = new StopWatchUtil("上传图片");
@@ -91,7 +91,7 @@ public class UserController {
     /**
      * 保存用户详情
      */
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('admin','user')")
     @PostMapping(path = "saveUserInfo")
     @Transactional(rollbackFor = Exception.class)
     public ResultVo<Boolean> saveUserInfo(@RequestBody UserInfoSaveReq req) {
@@ -106,7 +106,7 @@ public class UserController {
      * 用户的文章列表翻页
      * todo  翻页优化
      */
-    @PreAuthorize("hasRole('user')")
+    @AnonymousAccess
     @GetMapping(path = "article")
     public ResultVo<PageResultVo<ArticleDTO>> articleList(@RequestParam(name = "userId") Long userId,
                                              @RequestParam(name = "homeSelectType") String homeSelectType,
@@ -127,7 +127,7 @@ public class UserController {
     /**
      * 获取用户关注列表
      */
-    @PreAuthorize("hasRole('user')")
+    @AnonymousAccess
     @GetMapping(path = "follow")
     public ResultVo<PageListVo<FollowUserInfoDTO>> followList(@RequestParam(name = "userId") Long userId,
                                             @RequestParam(name = "followSelectType") String followSelectType,
@@ -140,10 +140,10 @@ public class UserController {
     }
 
     @ApiOperation("获取当前登录用户信息")
-    @PreAuthorize("hasRole('user')")
+    @AnonymousAccess
     @GetMapping("info")
-    public ResultVo<BaseUserInfoDTO> info() {
-        BaseUserInfoDTO user = userService.queryUserInfo(RequestInfoContext.getReqInfo().getUserId());
+    public ResultVo<BaseUserInfoDTO> info(@RequestParam(name = "userId")Long userId) {
+        BaseUserInfoDTO user = userService.queryUserInfo(userId);
         return ResultVo.ok(user);
     }
 
@@ -156,10 +156,22 @@ public class UserController {
         return ResultVo.ok(vo);
     }
 
+    @ApiOperation("判断是否关注")
+    @PreAuthorize("hasAnyRole('admin','user')")
+    @GetMapping(path = "isFollow")
+    public ResultVo<Boolean> isFollow(@RequestParam(name = "userId") Long followUserId) {
+        Long userId = RequestInfoContext.getReqInfo().getUserId();
+        if (Objects.equals(userId, followUserId)) {
+            return ResultVo.ok(false);
+        }
+        boolean follow = userService.isFollow(userId, followUserId);
+        return ResultVo.ok(follow);
+    }
+
     @ApiOperation("用户基本数据")
     @AnonymousAccess
     @GetMapping(path = "statistic")
-    public ResultVo<UserStatisticInfoDTO> queryUserStatisticInfo(@RequestParam(name = "userId" ,required = false) Long userId) {
+    public ResultVo<UserStatisticInfoDTO> queryUserStatisticInfo(@RequestParam(name = "userId" ) Long userId) {
         UserStatisticInfoDTO vo = userService.queryUserStatisticInfo(userId);
         return ResultVo.ok(vo);
     }
