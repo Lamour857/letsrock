@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.wj.letsrock.domain.article.repository.TagRepository;
 import org.wj.letsrock.domain.cache.CacheKey;
 import org.wj.letsrock.domain.cache.CacheService;
+import org.wj.letsrock.infrastructure.cache.sync.CacheSyncStrategy;
 import org.wj.letsrock.utils.NumUtil;
 import org.wj.letsrock.model.vo.PageResultVo;
 import org.wj.letsrock.domain.article.converter.TagConverter;
@@ -31,51 +32,39 @@ public class TagSettingServiceImpl implements TagSettingService {
     private TagRepository tagDao;
     @Autowired
     private CacheService cacheService;
+    @Autowired
+    private CacheSyncStrategy  cacheSyncStrategy;
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTag(TagReq tagReq) {
         TagDO tagDO = TagConverter.toDO(tagReq);
-
-        // 先写 MySQL
-        if (NumUtil.nullOrZero(tagReq.getTagId())) {
-            tagDao.save(tagDO);
-        } else {
+        if(!NumUtil.nullOrZero(tagReq.getTagId())){
             tagDO.setId(tagReq.getTagId());
-            tagDao.updateById(tagDO);
         }
 
-        // 再删除 Redis
-        cacheService.remove(CacheKey.TAG_PREFIX+ tagDO.getId());
+        cacheSyncStrategy.sync(CacheKey.tagKey(tagDO.getId()), tagDO, () -> tagDao.updateById(tagDO));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteTag(Integer tagId) {
-        TagDO tagDO = tagDao.getById(tagId);
-        if (tagDO != null){
-            // 先写 MySQL
+    public void deleteTag(Long tagId) {
+        if(NumUtil.nullOrZero(tagId)){return;}
+        cacheSyncStrategy.sync(CacheKey.tagKey(tagId), null, () -> {
             tagDao.removeById(tagId);
-
-            // 再删除 Redis
-            cacheService.remove(CacheKey.TAG_PREFIX+tagDO.getId());
-
-        }
+        });
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void operateTag(Integer tagId, Integer pushStatus) {
         TagDO tagDO = tagDao.getById(tagId);
-        if (tagDO != null){
-
-            // 先写 MySQL
-            tagDO.setStatus(pushStatus);
+        if(tagDO==null){return;}
+        tagDO.setStatus(pushStatus);
+        cacheSyncStrategy.sync(CacheKey.tagKey(tagDO.getId()), tagDO, () -> {
             tagDao.updateById(tagDO);
-
-            // 再删除 Redis
-            cacheService.remove(CacheKey.TAG_PREFIX+tagDO.getId());
-        }
+        });
     }
 
     @Override

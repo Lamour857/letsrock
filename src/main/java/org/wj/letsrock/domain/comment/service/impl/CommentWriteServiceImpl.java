@@ -80,6 +80,11 @@ public class CommentWriteServiceImpl implements CommentWriteService {
         }
     }
 
+    @Override
+    public void updateComment(CommentDO comment) {
+        commentDao.updateById(comment);
+    }
+
     private CommentDO addComment(CommentSaveReq commentSaveReq) {
         // 0.获取父评论信息，校验是否存在
         Long parentCommentUser = getParentCommentUser(commentSaveReq.getParentCommentId());

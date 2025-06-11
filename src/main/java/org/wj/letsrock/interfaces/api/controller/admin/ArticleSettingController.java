@@ -3,6 +3,7 @@ package org.wj.letsrock.interfaces.api.controller.admin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.wj.letsrock.application.article.ArticleApplicationService;
 import org.wj.letsrock.infrastructure.context.RequestInfoContext;
@@ -29,6 +30,7 @@ import java.util.List;
  * @createTime: 2025-04-24-17:03
  **/
 @RestController
+@PreAuthorize("hasRole('admin')")
 @Api(value = "文章设置管理控制器", tags = "文章管理")
 @RequestMapping(path = { "/admin/article/"})
 public class ArticleSettingController {

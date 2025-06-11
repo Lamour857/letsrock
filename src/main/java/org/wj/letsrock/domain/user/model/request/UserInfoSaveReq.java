@@ -19,7 +19,7 @@ public class UserInfoSaveReq {
     /**
      * 用户名
      */
-    private String userName;
+    private String username;
 
     /**
      * 用户图像

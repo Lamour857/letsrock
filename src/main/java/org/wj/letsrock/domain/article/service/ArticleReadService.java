@@ -3,9 +3,11 @@ package org.wj.letsrock.domain.article.service;
 import org.wj.letsrock.domain.article.model.dto.ArticleDTO;
 import org.wj.letsrock.domain.article.model.entity.ArticleDO;
 import org.wj.letsrock.enums.HomeSelectEnum;
+import org.wj.letsrock.infrastructure.persistence.es.model.ArticleDocument;
 import org.wj.letsrock.model.vo.PageListVo;
 import org.wj.letsrock.model.vo.PageParam;
 import org.wj.letsrock.domain.article.model.dto.SimpleArticleDTO;
+import org.wj.letsrock.model.vo.PageResultVo;
 
 import java.util.List;
 import java.util.Map;
@@ -16,11 +18,10 @@ import java.util.Map;
  * @createTime: 2025-04-19-15:19
  **/
 public interface ArticleReadService {
-    PageListVo<ArticleDTO> queryArticlesByCategory(Long categoryId, PageParam page);
+    PageResultVo<ArticleDTO> queryArticlesByCategory(Long categoryId, PageParam page);
 
-    PageListVo<ArticleDTO> buildArticleListVo(List<ArticleDO> records, long pageSize);
 
-    PageListVo<ArticleDTO> queryArticlesByTag(Long tagId, PageParam pageParam);
+    PageResultVo<ArticleDTO> queryArticlesByTag(Long tagId, PageParam pageParam);
 
     ArticleDTO queryFullArticleInfo(Long articleId, Long userId);
 
@@ -50,9 +51,9 @@ public interface ArticleReadService {
      * @param key 关键词
      * @param page 分页参数
      */
-    PageListVo<ArticleDTO> queryArticlesBySearchKey(String key, PageParam page);
+    PageResultVo<ArticleDTO> queryArticlesBySearchKey(String key, PageParam page);
 
-    /**
+    /** todo
      * 查询用户的文章列表
      *
      * @param userId 用户编号
@@ -60,7 +61,7 @@ public interface ArticleReadService {
      * @param select 选择类型
      * @return
      */
-    PageListVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select);
+    PageResultVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select);
     /**
      * 返回总的文章计数
      *
@@ -68,5 +69,11 @@ public interface ArticleReadService {
      */
     Long getArticleCount();
 
-    PageListVo<ArticleDTO> queryLatestArticles(PageParam pageParam);
+    PageResultVo<ArticleDTO> queryLatestArticles(PageParam pageParam);
+
+    PageResultVo<ArticleDTO> queryHotArticles(PageParam pageParam);
+
+    ArticleDTO fillArticleRelatedInfo(ArticleDO record);
+
+    List<ArticleDTO> getArticleDTOList(List<ArticleDocument> list);
 }

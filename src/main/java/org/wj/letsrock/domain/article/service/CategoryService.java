@@ -13,6 +13,4 @@ public interface CategoryService {
     String queryCategoryName(Long categoryId);
 
     List<CategoryDTO> loadAllCategories();
-
-    void refreshCache();
 }

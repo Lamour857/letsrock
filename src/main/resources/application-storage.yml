@@ -17,6 +17,12 @@ spring:
     username: root
     password: GDragon@0223
     driver-class-name: com.mysql.cj.jdbc.Driver
+  elasticsearch:
+    enabled: true
+    uris: http://127.0.0.1:9200
+    username: elastic
+    password: GDragon@0223
+
 # mybatis-plus
 mybatis-plus:
   configuration:
@@ -24,10 +30,6 @@ mybatis-plus:
 # 图片存储相关配置
 image:
   type: local
-  abs-tmp-path: /tmp/storage/
-  web-img-path: /letsrock/image/
-  tmp-upload-path: /tmp/letsrock/
-  cdn-host:
 oss:
   type: local
   prefix: letsrock/
@@ -36,3 +38,8 @@ oss:
   sk:
   bucket:
   host: https://cdn.tobebetterjavaer.com/
+app:
+  storage:
+    location: ${user.home}/letsrock/images
+
+

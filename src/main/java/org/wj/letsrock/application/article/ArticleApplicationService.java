@@ -10,6 +10,7 @@ import org.wj.letsrock.domain.article.model.entity.ArticleDO;
 import org.wj.letsrock.domain.article.model.request.ArticlePostReq;
 import org.wj.letsrock.domain.article.model.request.SearchArticleReq;
 import org.wj.letsrock.domain.article.service.*;
+import org.wj.letsrock.domain.cache.CacheService;
 import org.wj.letsrock.domain.user.model.dto.BaseUserInfoDTO;
 import org.wj.letsrock.domain.user.model.entity.UserFootDO;
 import org.wj.letsrock.domain.user.service.UserFootService;
@@ -23,12 +24,14 @@ import org.wj.letsrock.enums.notify.NotifyTypeEnum;
 import org.wj.letsrock.infrastructure.config.RabbitmqConfig;
 import org.wj.letsrock.infrastructure.context.RequestInfoContext;
 import org.wj.letsrock.infrastructure.event.NotifyMsgEvent;
+import org.wj.letsrock.infrastructure.persistence.es.model.ArticleDocument;
 import org.wj.letsrock.model.vo.PageListVo;
 import org.wj.letsrock.model.vo.PageParam;
 import org.wj.letsrock.model.vo.PageResultVo;
 import org.wj.letsrock.utils.NumUtil;
 import org.wj.letsrock.infrastructure.utils.SpringUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -61,10 +64,13 @@ public class ArticleApplicationService {
     private RabbitTemplate rabbitTemplate;
     @Autowired
     private TagService tagService;
-    public PageListVo<ArticleDTO> queryArticlesByCategory(Long categoryId, PageParam page){
+    @Autowired
+    private ArticleSearchService  articleSearchService;
+
+    public PageResultVo<ArticleDTO> queryArticlesByCategory(Long categoryId, PageParam page){
         return articleReadService.queryArticlesByCategory(categoryId, page);
     }
-    public PageListVo<ArticleDTO> queryArticlesByTag(Long tagId, PageParam pageParam){
+    public PageResultVo<ArticleDTO> queryArticlesByTag(Long tagId, PageParam pageParam){
         return articleReadService.queryArticlesByTag(tagId, pageParam);
     }
     public ArticleDetailDTO getArticleDetail(Long articleId){
@@ -75,7 +81,7 @@ public class ArticleApplicationService {
 
 
         BaseUserInfoDTO user = userService.queryBasicUserInfo(articleDTO.getAuthor());
-        articleDTO.setAuthorName(user.getUserName());
+        articleDTO.setAuthorName(user.getUsername());
         articleDTO.setAuthorAvatar(user.getAvatar());
 
         boolean isFollowed = userRelationService.isFallowed(articleDTO.getAuthor(), RequestInfoContext.getReqInfo().getUserId());
@@ -84,7 +90,7 @@ public class ArticleApplicationService {
         return articleDetail;
     }
 
-    public PageListVo<ArticleDTO> relatedRecommend(Long articleId, PageParam pageParam) {
+    public PageResultVo<ArticleDTO> relatedRecommend(Long articleId, PageParam pageParam) {
 
         return articleRecommendService.relatedRecommend(articleId, pageParam);
     }
@@ -107,7 +113,9 @@ public class ArticleApplicationService {
         list.forEach(c -> c.setSelected(c.getCategoryId().equals(categoryId)));
         return list;
     }
-    public Boolean favor(Long articleId, ArticleDO article, OperateTypeEnum operate){
+    public Boolean favorOrCollect(Long articleId, ArticleDO article, OperateTypeEnum operate){
+
+        // 保存用户文章关系
         UserFootDO foot = userFootService.saveOrUpdateUserFoot(DocumentTypeEnum.ARTICLE, articleId, article.getUserId(),
                 RequestInfoContext.getReqInfo().getUserId(),
                 operate);
@@ -160,11 +168,26 @@ public class ArticleApplicationService {
         return vo;
     }
 
-    public PageListVo<ArticleDTO> queryArticlesBySearchKey(String key, PageParam pageParam) {
+    public PageResultVo<ArticleDTO> queryArticlesBySearchKey(String key, PageParam pageParam) {
+        try{
+            if(SpringUtil.getConfig("elasticsearch.enable").equals("true")){
+                PageResultVo<ArticleDocument> result = articleSearchService.searchArticles(key, pageParam);
+                if(!result.getList().isEmpty()){
+                    List<ArticleDTO> list = articleReadService.getArticleDTOList(result.getList());
+                    return PageResultVo.build(
+                            list,
+                            pageParam.getPageSize(),
+                            pageParam.getPageNum(),
+                            result.getTotal()
+                    );
+                }
+            }
+        }catch (Exception e){
+            log.warn("elastic 搜索文章异常",e);
+        }
         return articleReadService.queryArticlesBySearchKey(key, pageParam);
     }
-
-    public PageListVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select) {
+    public PageResultVo<ArticleDTO> queryArticlesByUserAndType(Long userId, PageParam pageParam, HomeSelectEnum select) {
         return articleReadService.queryArticlesByUserAndType(userId, pageParam, select);
     }
 
@@ -184,7 +207,11 @@ public class ArticleApplicationService {
         return articleSettingService.getArticleList(req);
     }
 
-    public PageListVo<ArticleDTO> queryLatestArticles(PageParam pageParam) {
+    public PageResultVo<ArticleDTO> queryLatestArticles(PageParam pageParam) {
         return articleReadService.queryLatestArticles(pageParam);
+    }
+
+    public PageResultVo<ArticleDTO> queryHotArticles(PageParam pageParam) {
+         return articleReadService.queryHotArticles(pageParam);
     }
 }

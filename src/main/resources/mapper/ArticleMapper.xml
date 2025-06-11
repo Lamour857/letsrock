@@ -6,25 +6,7 @@
             limit #{pageParam.offset}, #{pageParam.limit}
         </if>
     </sql>
-    <select id="listArticleByCategoryAndTags" resultType="org.wj.letsrock.domain.article.model.entity.ReadCountDO">
-        select DISTINCT(a.id) as documentId, rc.cnt as cnt from article a
-        left join article_tag as t on a.id = t.article_id
-        left join read_count rc on rc.document_id  = a.id
-        where rc.document_type = ${@org.wj.letsrock.enums.article.DocumentTypeEnum@ARTICLE.code}
-        and a.status = ${@org.wj.letsrock.enums.article.PushStatusEnum@ONLINE.code}
-        and a.deleted = ${@org.wj.letsrock.enums.YesOrNoEnum@NO.code}
-        <if test="categoryId != null">
-            and a.category_id = #{categoryId}
-        </if>
-        and t.tag_id in
-        <if test="tags != null and tags.size > 0">
-            <foreach collection="tags" item="tagId" open="(" close=")" separator=",">
-                #{tagId}
-            </foreach>
-        </if>
-        order by rc.cnt desc, a.id desc
-        <include refid="limit"/>
-    </select>
+
     <sql id="articlesByParams">
         where a.deleted = ${@org.wj.letsrock.enums.YesOrNoEnum@NO.code}
         <if test="searchParams.title != null and searchParams.title != ''">
@@ -43,7 +25,18 @@
             and a.status = #{searchParams.status}
         </if>
     </sql>
-
+    <select id="selectArticleIdsByTagIds" resultType="java.lang.Long">
+        SELECT DISTINCT a.id
+        FROM article a
+        INNER JOIN article_tag at ON a.id = at.article_id
+        WHERE at.tag_id IN
+        <foreach collection="tagIds" item="tagId" open="(" separator="," close=")">
+            #{tagId}
+        </foreach>
+        AND at.deleted = 0
+        AND a.deleted = 0
+        AND a.status = 1
+    </select>
     <select id="countArticlesByParams" resultType="java.lang.Long">
         select count(*) from article a
         left join user_info u on a.user_id = u.user_id

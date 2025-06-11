@@ -2,7 +2,7 @@ package org.wj.letsrock.domain.user.service;
 
 import org.wj.letsrock.domain.user.model.dto.BaseUserInfoDTO;
 import org.wj.letsrock.domain.user.model.dto.SimpleUserInfoDTO;
-import org.wj.letsrock.domain.user.model.dto.UserStatisticInfoDTO;
+
 import org.wj.letsrock.domain.user.model.entity.UserInfoDO;
 import org.wj.letsrock.domain.user.model.request.UserInfoSaveReq;
 
@@ -50,4 +50,5 @@ public interface UserService {
     UserInfoDO getByUserId(Long userId);
 
     Long getJoinDayCount(Long userId);
+
 }

@@ -1,6 +1,7 @@
 package org.wj.letsrock.interfaces.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,12 +27,11 @@ public class NoticeController {
     private NotifyApplicationService notifyService;
     /**
      * 消息通知列表，用于前后端分离的场景
-     *
      * @param type 消息类型
      * @param page 页号
      * @param pageSize 页大小
-     * @return
      */
+    @PreAuthorize("hasAnyRole('admin','user')")
     @RequestMapping(path = "list")
     public ResultVo<PageListVo<NotifyMsgDTO>> list(@RequestParam(name = "type") String type,
                                                    @RequestParam("page") Long page,

@@ -13,7 +13,7 @@
 
         SELECT
         u.user_id as userId,
-        u.user_name as userName,
+        u.username as userName,
         u.avatar as avatar,
         r.id as relationId,
         true as followed
@@ -31,7 +31,7 @@
 
         SELECT
         u.user_id as userId,
-        u.user_name as userName,
+        u.username as userName,
         u.avatar as avatar,
         r.id as relationId
         FROM user_relation as r

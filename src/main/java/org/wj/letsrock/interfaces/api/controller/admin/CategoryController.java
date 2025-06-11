@@ -3,6 +3,7 @@ package org.wj.letsrock.interfaces.api.controller.admin;
 import io.swagger.annotations.Api;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.wj.letsrock.application.article.CategoryApplicationService;
 import org.wj.letsrock.enums.StatusEnum;
@@ -20,6 +21,7 @@ import org.wj.letsrock.domain.article.service.CategorySettingService;
  * @createTime: 2025-04-25-12:36
  **/
 @RestController
+@PreAuthorize("hasRole('admin')")
 @Api(value = "文章类目管理控制器", tags = "类目管理")
 @RequestMapping(path =  "admin/category/")
 public class CategoryController {

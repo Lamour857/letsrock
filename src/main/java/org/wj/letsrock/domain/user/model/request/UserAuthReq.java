@@ -9,6 +9,7 @@ import lombok.Data;
  **/
 @Data
 public class UserAuthReq {
-    private String principle;
-    private String credential;
+    private String username;
+    private String password;
+    private String code;
 }

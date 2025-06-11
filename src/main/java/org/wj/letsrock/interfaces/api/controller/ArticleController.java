@@ -2,10 +2,13 @@ package org.wj.letsrock.interfaces.api.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.wj.letsrock.application.article.ArticleApplicationService;
 import org.wj.letsrock.enums.OperateTypeEnum;
 import org.wj.letsrock.enums.StatusEnum;
+import org.wj.letsrock.infrastructure.limit.RateLimit;
+import org.wj.letsrock.infrastructure.security.annotation.AnonymousAccess;
 import org.wj.letsrock.model.vo.PageListVo;
 import org.wj.letsrock.model.vo.PageParam;
 import org.wj.letsrock.model.vo.PageResultVo;
@@ -37,26 +40,38 @@ public class ArticleController extends BaseController {
     private ArticleApplicationService articleService;
     /**
      * 分类下的文章列表
-     *
      * @param categoryId 类目id
      * @param page 请求页
      * @param size 分页数
      * @return 文章列表
      */
+    @AnonymousAccess
     @GetMapping(path = "list/category/{category}")
-    public ResultVo<PageListVo<ArticleDTO>> categoryDataList(@PathVariable("category") Long categoryId,
-                                                             @RequestParam(name = "page") Long page,
-                                                             @RequestParam(name = "size", required = false) Long size) {
+    public ResultVo<PageResultVo<ArticleDTO>> categoryDataList(
+            @PathVariable("category") Long categoryId,
+            @RequestParam(name = "page") Long page,
+            @RequestParam(name = "size", required = false) Long size) {
         PageParam pageParam = buildPageParam(page, size);
-        PageListVo<ArticleDTO> list = articleService.queryArticlesByCategory(categoryId, pageParam);
+        PageResultVo<ArticleDTO> list = articleService.queryArticlesByCategory(categoryId, pageParam);
         return ResultVo.ok(list);
     }
 
-     @GetMapping(path = "list/latest")
-     public  ResultVo<PageListVo<ArticleDTO>> latestDataList(@RequestParam(name = "page") Long page,
-                                                             @RequestParam(name = "size", required = false) Long size) {
+    @AnonymousAccess
+    @GetMapping(path = "list/latest")
+    public  ResultVo<PageResultVo<ArticleDTO>> latestDataList
+            (@RequestParam(name = "page") Long page,
+             @RequestParam(name = "size", required = false) Long size) {
         PageParam pageParam = buildPageParam(page, size);
-        PageListVo<ArticleDTO> list = articleService.queryLatestArticles(pageParam);
+        PageResultVo<ArticleDTO> list = articleService.queryLatestArticles(pageParam);
+        return ResultVo.ok(list);
+    }
+    @AnonymousAccess
+    @GetMapping( path = "list/hot")
+     public ResultVo<PageResultVo<ArticleDTO>> hotDataList(
+             @RequestParam(name = "page") Long page,
+             @RequestParam(name = "size", required = false) Long size) {
+        PageParam pageParam = buildPageParam(page, size);
+        PageResultVo<ArticleDTO> list = articleService.queryHotArticles(pageParam);
         return ResultVo.ok(list);
     }
     /**
@@ -67,12 +82,13 @@ public class ArticleController extends BaseController {
      * @param size 分页数
      * @return 文章列表
      */
+    @AnonymousAccess
     @GetMapping(path = "list/tag/{tag}")
-    public ResultVo<PageListVo<ArticleDTO>> tagList(@PathVariable("tag") Long tagId,
+    public ResultVo<PageResultVo<ArticleDTO>> tagList(@PathVariable("tag") Long tagId,
                                          @RequestParam(name = "page") Long page,
                                          @RequestParam(name = "size", required = false) Long size) {
         PageParam pageParam = buildPageParam(page, size);
-        PageListVo<ArticleDTO> list = articleService.queryArticlesByTag(tagId, pageParam);
+        PageResultVo<ArticleDTO> list = articleService.queryArticlesByTag(tagId, pageParam);
         return ResultVo.ok(list);
     }
     /**
@@ -80,6 +96,7 @@ public class ArticleController extends BaseController {
      * @param articleId
      * @return
      */
+    @AnonymousAccess
     @GetMapping("/data/detail/{articleId}")
     public ResultVo<ArticleDetailDTO> detail(@PathVariable(name = "articleId") Long articleId) {
         ArticleDetailDTO articleDetail = articleService.getArticleDetail(articleId);
@@ -93,19 +110,19 @@ public class ArticleController extends BaseController {
      * @param size
      * @return
      */
+    @AnonymousAccess
     @RequestMapping(path = "recommend")
     @MdcDot(bizCode = "#articleId")
-    public ResultVo<PageListVo<ArticleDTO>> recommend(@RequestParam(value = "articleId") Long articleId,
+    public ResultVo<PageResultVo<ArticleDTO>> recommend(@RequestParam(value = "articleId") Long articleId,
                                            @RequestParam(name = "page") Long page,
                                            @RequestParam(name = "size", required = false) Long size) {
         size = Optional.ofNullable(size).orElse(PageParam.DEFAULT_PAGE_SIZE);
         size = Math.min(size, PageParam.DEFAULT_PAGE_SIZE);
-        PageListVo<ArticleDTO> articles = articleService.relatedRecommend(articleId, PageParam.newPageInstance(page, size));
+        PageResultVo<ArticleDTO> articles = articleService.relatedRecommend(articleId, PageParam.newPageInstance(page, size));
         return ResultVo.ok(articles);
     }
     /**
      * 提取摘要
-     *
      * @return
      */
     @PostMapping(path = "generateSummary")
@@ -115,9 +132,9 @@ public class ArticleController extends BaseController {
 
     /**
      * 查询所有的标签
-     *
      * @return
      */
+    @AnonymousAccess
     @GetMapping(path = "tag/list")
     public ResultVo<PageResultVo<TagDTO>> queryTags(@RequestParam(name = "key", required = false) String key,
                                                     @RequestParam(name = "pageNumber", required = false, defaultValue = "1") Integer pageNumber,
@@ -128,24 +145,22 @@ public class ArticleController extends BaseController {
 
     /**
      * 获取所有的分类
-     *
-     * @return
      */
+    @AnonymousAccess
     @GetMapping(path = "category/list")
     public ResultVo<List<CategoryDTO>> getCategoryList(@RequestParam(name = "categoryId", required = false) Long categoryId,
                                                     @RequestParam(name = "ignoreNoArticles", required = false) Boolean ignoreNoArticles) {
         return ResultVo.ok(articleService.getCategoryList(categoryId, ignoreNoArticles));
     }
 
-
-//    @Permission(role = UserRole.LOGIN)
     /**
-     * 收藏、点赞等相关操作
-     *
+     * 文章点赞
      * @param articleId
      * @param type      取值来自于 OperateTypeEnum#code
      * @return
      */
+    @PreAuthorize("hasAnyRole('admin','user')")
+    @RateLimit (key = "article:favor:", spEl = "T(org.wj.letsrock.infrastructure.context.RequestInfoContext).getReqInfo().getUserId() + ':' + #articleId + ':'")
     @GetMapping(path = "favor")
     @MdcDot(bizCode = "#articleId")
     public ResultVo<Boolean> favor(@RequestParam(name = "articleId") Long articleId,
@@ -154,7 +169,7 @@ public class ArticleController extends BaseController {
             log.debug("开始点赞: {}", type);
         }
         OperateTypeEnum operate = OperateTypeEnum.fromCode(type);
-        if (operate == OperateTypeEnum.EMPTY) {
+        if (operate !=OperateTypeEnum.PRAISE&&operate!=OperateTypeEnum.CANCEL_PRAISE) {
             return ResultVo.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, type + "非法");
         }
         // 要求文章必须存在
@@ -162,15 +177,42 @@ public class ArticleController extends BaseController {
         if (article == null) {
             return ResultVo.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, "文章不存在!");
         }
-        articleService.favor(articleId, article, operate);
+        articleService.favorOrCollect(articleId, article, operate);
         return ResultVo.ok(true);
     }
+    /**
+     * 文章收藏
+     * @param articleId 文章id
+     * @param type      取值来自于 OperateTypeEnum#code
+     */
+    @PreAuthorize("hasAnyRole('admin','user')")
+    @RateLimit (key = "article:collect:", spEl = "T(org.wj.letsrock.infrastructure.context.RequestInfoContext).getReqInfo().getUserId() + ':' + #articleId + ':'")
+    @GetMapping(path = "collect")
+    @MdcDot(bizCode = "#articleId")
+    public ResultVo<Boolean> collect(@RequestParam(name = "articleId") Long articleId,
+                                   @RequestParam(name = "type") Integer type)  {
+        if (log.isDebugEnabled()) {
+            log.debug("开始收藏: {}", type);
+        }
+        OperateTypeEnum operate = OperateTypeEnum.fromCode(type);
+        if (operate != OperateTypeEnum.COLLECTION&&operate!=OperateTypeEnum.CANCEL_COLLECTION) {
+            return ResultVo.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, type + "非法");
+        }
+        // 要求文章必须存在
+        ArticleDO article = articleService.queryBasicArticle(articleId);
+        if (article == null) {
+            return ResultVo.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, "文章不存在!");
+        }
+        articleService.favorOrCollect(articleId, article, operate);
+        return ResultVo.ok(true);
+    }
+
 
     /**
      * 发布文章，返回文章id以便跳转
      * @return
      */
-    //@Permission(role = UserRole.LOGIN)
+    @PreAuthorize("hasAnyRole('admin','user')")
     @PostMapping(path = "post")
     @MdcDot(bizCode = "#req.articleId")
     public ResultVo<Long> post(@RequestBody ArticlePostReq req){
@@ -179,11 +221,9 @@ public class ArticleController extends BaseController {
     }
     /**
      * 文章删除
-     *
-     * @param articleId
-     * @return
+     * @param articleId 文章id
      */
-    //@Permission(role = UserRole.LOGIN)
+    @PreAuthorize("hasAnyRole('admin','user')")
     @RequestMapping(path = "delete")
     @MdcDot(bizCode = "#articleId")
     public ResultVo<Boolean> delete(@RequestParam(value = "articleId") Long articleId) {

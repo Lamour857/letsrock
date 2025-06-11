@@ -23,7 +23,7 @@ public class BaseUserInfoDTO extends BaseDTO {
      * 用户名
      */
     @ApiModelProperty(value = "用户名", required = true)
-    private String userName;
+    private String username;
 
     /**
      * 用户角色 admin, normal

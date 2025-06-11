@@ -78,7 +78,7 @@ public class ArticleConverter {
         searchArticleParams.setTitle( req.getTitle() );
         searchArticleParams.setArticleId( req.getArticleId() );
         searchArticleParams.setUserId( req.getUserId() );
-        searchArticleParams.setUserName( req.getUserName() );
+        searchArticleParams.setUsername( req.getUsername() );
         searchArticleParams.setStatus( req.getStatus() );
         searchArticleParams.setOfficalStat( req.getOfficalStat() );
         searchArticleParams.setToppingStat( req.getToppingStat() );

@@ -39,7 +39,7 @@ public class RequestRecordFilter implements Filter {
         String uri=((HttpServletRequest) servletRequest).getRequestURI();
         StopWatchUtil stopWatch = new StopWatchUtil(uri+": 请求耗时");
         try {
-            stopWatch.start(uri+": 请求参数构建1");
+            stopWatch.start(uri+": 请求参数构建 filter");
             request = this.initReqInfo((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse);
             stopWatch.stop();
             stopWatch.start("业务执行");
@@ -99,7 +99,7 @@ public class RequestRecordFilter implements Filter {
             return request;
         }
 
-        StopWatchUtil stopWatch = new StopWatchUtil(request.getRequestURI()+": 请求参数构建2");
+        StopWatchUtil stopWatch = new StopWatchUtil(request.getRequestURI()+": 请求参数构建 initReqInfo");
         try {
             stopWatch.start("traceId");
             // 添加全链路的traceId
@@ -124,16 +124,10 @@ public class RequestRecordFilter implements Filter {
             reqInfo.setReferer(request.getHeader("referer"));
             reqInfo.setClientIp(IpUtil.getClientIp(request));
             reqInfo.setUserAgent(request.getHeader("User-Agent"));
-            
-            //reqInfo.setDeviceId(getOrInitDeviceId(request, response));
 
             request = this.wrapperRequest(request, reqInfo);
             stopWatch.stop();
 
-//            stopWatch.start("登录用户信息");
-//            // 初始化登录信息, 用户身份识别
-//            globalInitService.initLoginUser(reqInfo);
-//            stopWatch.stop();
 
             RequestInfoContext.addReqInfo(reqInfo);
             stopWatch.start("回写traceId");
@@ -143,9 +137,9 @@ public class RequestRecordFilter implements Filter {
         } catch (Exception e) {
             log.error("init reqInfo error!", e);
         } finally {
-            if (!EnvironmentUtil.isPro()) {
-                log.info("{} -> 请求构建耗时: \n{}", request.getRequestURI(), stopWatch.prettyPrint());
-            }
+//            if (!EnvironmentUtil.isPro()) {
+//                log.info("{} -> 请求构建耗时: \n{}", request.getRequestURI(), stopWatch.prettyPrint());
+//            }
         }
 
         return request;

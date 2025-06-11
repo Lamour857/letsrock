@@ -1,10 +1,7 @@
 package org.wj.letsrock.infrastructure.config;
 
 import lombok.Getter;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -32,6 +29,11 @@ public class RabbitmqConfig {
     public static final String OPERATE_EXCHANGE = "operate.exchange";
     public static final String OPERATE_ROUTING_KEY = "operate.routing.key";
 
+    private static final String CANAL_EXCHANGE = "canal.exchange";
+    public static final String CANAL_QUEUE = "canal.queue";
+    public static final String CANAL_ROUTING_KEY = "canal.routing.key";
+
+
     @Bean
     public Queue operateQueue() {
         return new Queue(OPERATE_QUEUE, true);
@@ -43,8 +45,24 @@ public class RabbitmqConfig {
     }
 
     @Bean
-    public Binding binding() {
+    public Binding operateBinding() {
         return BindingBuilder.bind(operateQueue()).to(operateExchange()).with(OPERATE_ROUTING_KEY);
+    }
+    @Bean
+    public DirectExchange canalExchange() {
+        return new DirectExchange(CANAL_EXCHANGE, true, false); // 持久化直连交换机
+    }
+
+    @Bean
+    public Queue canalQueue() {
+        return new Queue(CANAL_QUEUE, true); // 持久化队列
+    }
+
+    @Bean
+    public Binding canalBinding() {
+        return BindingBuilder.bind(canalQueue())
+                .to(canalExchange())
+                .with(CANAL_ROUTING_KEY); // 路由键
     }
 
     @Bean

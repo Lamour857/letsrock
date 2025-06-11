@@ -1,5 +1,6 @@
 package org.wj.letsrock.domain.user.repository;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.wj.letsrock.domain.user.model.dto.SimpleUserInfoDTO;
 import org.wj.letsrock.domain.user.model.dto.UserFootStatisticDTO;
@@ -20,9 +21,9 @@ public interface UserFootRepository extends IService<UserFootDO> {
 
     Long countCommentPraise(Long commentId);
 
-    List<Long> listReadArticleByUserId(Long userId, PageParam pageParam);
+    Page<UserFootDO> listReadArticleByUserId(Long userId, PageParam pageParam);
 
-    List<Long> listCollectedArticlesByUserId(Long userId, PageParam pageParam);
+    Page<UserFootDO> listCollectedArticlesByUserId(Long userId, PageParam pageParam);
 
     UserFootStatisticDTO getFootCount();
 }

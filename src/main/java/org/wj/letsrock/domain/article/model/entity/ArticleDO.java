@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.wj.letsrock.domain.common.Collectable;
+import org.wj.letsrock.domain.common.Praiseable;
 import org.wj.letsrock.model.BaseDO;
 
 /**
@@ -64,10 +66,16 @@ public class ArticleDO extends BaseDO implements Serializable {
     private Integer toppingStat;
 
     @ApiModelProperty(value = "点赞数")
-    private Integer praise;
+    private Long praise;
+
+     @ApiModelProperty(value = "阅读数")
+     private Long readCount;
 
     @ApiModelProperty(value = "收藏数")
-    private Integer collection;
+    private Long collection;
+
+    @ApiModelProperty(value = "评论数")
+     private Long comment;
 
     @ApiModelProperty(value = "加精状态：0-不加精，1-加精")
     private Integer creamStat;
@@ -80,8 +88,5 @@ public class ArticleDO extends BaseDO implements Serializable {
 
     @ApiModelProperty(value = "文章阅读类型 0-直接阅读 1-登录阅读 2-付费阅读 3-星球")
     private Integer readType;
-
-
-
 
 }

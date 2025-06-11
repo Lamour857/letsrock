@@ -3,6 +3,7 @@ package org.wj.letsrock.interfaces.api.controller.admin;
 
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.wj.letsrock.application.article.TagApplicationService;
 import org.wj.letsrock.enums.StatusEnum;
@@ -20,7 +21,7 @@ import org.wj.letsrock.domain.article.service.TagSettingService;
  * @createTime: 2025-04-27-10:32
  **/
 @RestController
-////@Permission(role = UserRole.LOGIN)
+@PreAuthorize("hasRole('admin')")
 @Api(value = "文章标签管理控制器", tags = "标签管理")
 @RequestMapping(path = {"admin/tag/"})
 public class TagController {
@@ -37,7 +38,7 @@ public class TagController {
 
     //@Permission(role = UserRole.ADMIN)
     @GetMapping(path = "delete")
-    public ResultVo<String> delete(@RequestParam(name = "tagId") Integer tagId) {
+    public ResultVo<String> delete(@RequestParam(name = "tagId") Long tagId) {
         tagService.deleteTag(tagId);
         return ResultVo.ok();
     }

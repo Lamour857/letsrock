@@ -193,7 +193,7 @@ public class ColumnSettingServiceImpl implements ColumnSettingService {
             // 设置作者信息
             columnDTOS.forEach(columnDTO -> {
                 BaseUserInfoDTO user = userMap.get(columnDTO.getAuthor());
-                columnDTO.setAuthorName(user.getUserName());
+                columnDTO.setAuthorName(user.getUsername());
                 columnDTO.setAuthorAvatar(user.getAvatar());
                 columnDTO.setAuthorProfile(user.getProfile());
             });

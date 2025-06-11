@@ -18,9 +18,9 @@ import java.util.Map;
  * @createTime: 2025-05-23-16:51
  **/
 public interface ArticleRepository extends IService<ArticleDO> {
-    List<ArticleDO> listArticlesByCategoryId(Long categoryId, PageParam pageParam);
+    Page<ArticleDO> listArticlesByCategoryId(Long categoryId, PageParam pageParam);
 
-    List<ArticleDO> listRelatedArticlesOrderByReadCount(Long categoryId, List<Long> tagIds, PageParam pageParam);
+    Page<ArticleDO> listRelatedArticlesOrderByReadCount(Long categoryId, List<Long> tagIds, PageParam pageParam);
 
     ArticleDTO queryArticleDetail(Long articleId);
 
@@ -28,7 +28,6 @@ public interface ArticleRepository extends IService<ArticleDO> {
 
     boolean showReviewContent(ArticleDO article);
 
-    int increaseReadCount(Long articleId);
 
     Map<Long, Long> countArticleByCategoryId();
 
@@ -38,9 +37,9 @@ public interface ArticleRepository extends IService<ArticleDO> {
 
     List<ArticleDO> listSimpleArticlesByBySearchKey(String key);
 
-    List<ArticleDO> listArticlesBySearchKey(String key, PageParam pageParam);
+    Page<ArticleDO> listArticlesBySearchKey(String key, PageParam pageParam);
 
-    List<ArticleDO> listArticlesByUserId(Long userId, PageParam pageParam);
+    Page<ArticleDO> listArticlesByUserId(Long userId, PageParam pageParam);
 
     List<ArticleAdminDTO> listArticlesByParams(SearchArticleParams params);
 
@@ -48,9 +47,10 @@ public interface ArticleRepository extends IService<ArticleDO> {
 
     Long countArticle();
 
-    void incrementPraiseCount(Long articleId);
-
-    void decrementPraiseCount(Long articleId);
 
     Page<ArticleDO> listLatestArticles(PageParam pageParam);
+
+    Page<ArticleDO> listHotArticles(PageParam pageParam);
+
+    void updateArticleStatisticInfo(Long articleId, Map<String, Long> statistics);
 }

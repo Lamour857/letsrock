@@ -1,8 +1,10 @@
 package org.wj.letsrock.domain.image.factory.storage;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.wj.letsrock.infrastructure.config.StorageConfig;
 import org.wj.letsrock.utils.ImageUtil;
 
 import java.io.IOException;
@@ -13,14 +15,13 @@ import java.util.UUID;
 
 @Service("localImageStorage")
 public class LocalImageStorage implements ImageStorage {
-    private final Path storagePath;
+    @Autowired
+    private StorageConfig storageConfig;
     private final String accessUrl;
 
     public LocalImageStorage(
-            Path imageStoragePath,
             @Value("${server.address}") String address,
             @Value("${server.port}") String port) {
-        this.storagePath = imageStoragePath;
         this.accessUrl = String.format("http://%s:%s/image/", address, port);
     }
 
@@ -28,7 +29,7 @@ public class LocalImageStorage implements ImageStorage {
     public String store(MultipartFile file) throws IOException {
         String extension = ImageUtil.getExt(file.getOriginalFilename());
         String filename = UUID.randomUUID() + "." + extension;
-        Path targetPath = storagePath.resolve(filename).normalize();
+        Path targetPath = storageConfig.getLocation().resolve(filename).normalize();
         
         Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
         return accessUrl + filename;
@@ -40,7 +41,7 @@ public class LocalImageStorage implements ImageStorage {
             return false;
         }
         String filename = url.substring(accessUrl.length());
-        Path path = storagePath.resolve(filename);
+        Path path =storageConfig.getLocation().resolve(filename);
         return Files.exists(path);
     }
 
@@ -50,7 +51,7 @@ public class LocalImageStorage implements ImageStorage {
             return;
         }
         String filename = url.substring(accessUrl.length());
-        Path path = storagePath.resolve(filename);
+        Path path = storageConfig.getLocation().resolve(filename);
         Files.deleteIfExists(path);
     }
 }

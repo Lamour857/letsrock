@@ -10,63 +10,63 @@ import java.time.format.DateTimeFormatter;
  * @createTime: 2025-05-27-12:40
  **/
 public class CacheKey {
-    public static final String CATEGORY_KEY = "category:";
-    public static String BASE_KEY_PREFIX="letsrock:";
-    /**
-     * 用户相关统计信息
-     */
-    public static String USER_STATISTIC_INFO = "user:statistic:";
-    /**
-     * 文章相关统计信息
-     */
-    public static String ARTICLE_STATISTIC_INFO = "article:statistic:";
-    /**
-     * 关注数
-     */
-    public static String FOLLOW_COUNT = "followCount:";
 
-    /**
-     * 粉丝数
-     */
-    public static String FANS_COUNT = "fansCount:";
+    private static final String CATEGORY_KEY = "category:";
+    public static final String RATE_LIMIT = "rate:limit:";
 
-    /**
-     * 已发布文章数
-     */
-    public static String ARTICLE_COUNT = "articleCount:";
+    public static final String BASE_KEY_PREFIX="letsrock:";
 
-    /**
-     * 文章点赞数
-     */
-    public static String PRAISE_COUNT = "praiseCount:";
+    private static final String USER_STATISTIC_KEY = "user:statistic:";
+
+    private static final String ARTICLE_STATISTIC_KEY = "article:statistic:";
+    private static final String COMMENT_STATISTIC_KEY = "comment:statistic:";
+    public static final String DIRTY_ARTICLE_STATISTIC = "dirty:article:statistic";
+    public static final String DIRTY_COMMENT_STATISTIC = "dirty:comment:statistic";
+    public static final String FOLLOW_COUNT = "follow:count:";
 
 
-    /**
-     * 文章被阅读数
-     */
-    public static String READ_COUNT = "readCount:";
+    public static final String FANS_COUNT = "fans:count:";
 
-    /**
-     * 文章被收藏数
-     */
-    public static String COLLECTION_COUNT = "collectionCount:";
 
-    /**
-     * 评论数
-     */
-    public static String COMMENT_COUNT = "commentCount:";
-    public static String TAG_PREFIX = "tag:";
+    public static final String ARTICLE_COUNT = "article:count:";
 
-    public static String LOCK_PRAISE_PREFIX =  "lock:praise:%d:%d";
-    public static String lockPraiseKey(Long articleId, Long userId) {
-        return String.format(LOCK_PRAISE_PREFIX, articleId, userId);
+
+    public static final String PRAISE_COUNT = "praise:count:";
+
+
+
+    public static final String READ_COUNT = "read:count:";
+
+
+    public static final String COLLECTION_COUNT = "collection:count:";
+
+    public static final String COMMENT_COUNT = "comment:count:";
+    private static final String TAG_KEY = "tag:";
+    private static final String ACTIVITY_SCORE_KEY = "activity:rank:";
+    private static final String USER_LOGIN_TOKEN = "user:login:count";
+    public static final String ARTICLE_WHITE_LIST = "auth:article:white:list";
+
+    private static final String TOKEN_CACHE_KEY = "token:";
+
+    public static String tokenCacheKey(String token){
+        return TOKEN_CACHE_KEY + token;
     }
 
-    public static String ARTICLE_PRAISE_PREFIX =  "article:praise:%d:%d";
-    public static String articlePraiseKey(Long articleId, Long userId) {
-        return String.format(ARTICLE_PRAISE_PREFIX, articleId, userId);
+    public static String categoryKey(Long categoryId) {
+        return CATEGORY_KEY + categoryId;
     }
-    public static final String ACTIVITY_SCORE_KEY = "activity:rank:";
+
+    public static String tagKey(Long id) {
+        return TAG_KEY + id;
+    }
+
+    public static String articleStatisticInfo(Long id) {
+        return ARTICLE_STATISTIC_KEY + id;
+    }
+
+    public static String userStatisticInfo(Long userId) {
+        return USER_STATISTIC_KEY + userId;
+    }
     /**
      * 当天活跃度排行榜
      *
@@ -84,15 +84,11 @@ public class CacheKey {
         return ACTIVITY_SCORE_KEY + DateUtil.format(DateTimeFormatter.ofPattern("yyyyMM"), System.currentTimeMillis());
     }
 
-    public static final String ARTICLE_WHITE_LIST = "auth:article:white:list";
-
-    public static final String TOKEN_CACHE_KEY = "token:";
-
-    public static String tokenCacheKey(String token){
-        return TOKEN_CACHE_KEY + token;
+    public static String commentStatisticInfo(Long documentId) {
+         return COMMENT_STATISTIC_KEY + documentId;
     }
 
-    public static String categoryKey(Long categoryId) {
-        return "category:" + categoryId;
+    public static String userLoginToken(Long id) {
+        return USER_LOGIN_TOKEN + id;
     }
 }

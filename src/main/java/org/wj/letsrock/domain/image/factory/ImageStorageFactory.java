@@ -16,8 +16,6 @@ public class ImageStorageFactory {
     @Autowired
     private ImageProperties imageProperties;
 
-    @Autowired
-    private OssProperties ossProperties;
     
     public ImageStorage getImageStorage() {
         String type = imageProperties.getType();

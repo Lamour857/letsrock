@@ -3,6 +3,7 @@ package org.wj.letsrock.interfaces.api.controller.admin;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +24,7 @@ import java.util.List;
  * @createTime: 2025-04-29-8:15
  **/
 @RestController
-//@Permission(role = UserRole.ADMIN)
+@PreAuthorize("hasRole('admin')")
 @Api(value = "用户管理控制器", tags = "用户管理")
 @RequestMapping(path = {"admin/user/"})
 public class UserSettingController {

@@ -5,7 +5,7 @@ env:
   name: dev
 spring:
   config:
-    import: application-storage.yml
+    import: application-storage.yml, application-actuator.yml, application-message.yml,application-task.yml
   web:
     resources:
       static-locations: file:D://letsrock
@@ -43,6 +43,12 @@ jwt:
   issuer: letsrock # 签发者
   secret: theBestLetsrock # 签名密匙
   expiration: 86400000 # jwt的有效期，默认1天
+logging:
+  level:
+    org:
+      springframework:
+        security: INFO
+
 
 
 

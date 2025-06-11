@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.wj.letsrock.domain.cache.CacheService;
-import org.wj.letsrock.infrastructure.cache.redis.RedisCache;
+import org.wj.letsrock.infrastructure.cache.RedisCache;
 
 import java.util.concurrent.TimeUnit;
 

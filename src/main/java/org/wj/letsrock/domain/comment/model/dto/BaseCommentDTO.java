@@ -17,7 +17,7 @@ public class BaseCommentDTO implements Comparable<BaseCommentDTO> {
     /**
      * 用户名
      */
-    private String userName;
+    private String username;
 
     /**
      * 用户图像

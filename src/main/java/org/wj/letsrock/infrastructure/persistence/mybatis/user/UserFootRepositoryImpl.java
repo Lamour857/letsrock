@@ -2,9 +2,12 @@ package org.wj.letsrock.infrastructure.persistence.mybatis.user;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;
 import org.wj.letsrock.domain.user.repository.UserFootRepository;
+import org.wj.letsrock.enums.ReadStatEnum;
+import org.wj.letsrock.enums.article.CollectionStatEnum;
 import org.wj.letsrock.infrastructure.persistence.mybatis.user.mapper.UserFootMapper;
 import org.wj.letsrock.enums.article.DocumentTypeEnum;
 import org.wj.letsrock.enums.article.PraiseStatEnum;
@@ -58,8 +61,14 @@ public class UserFootRepositoryImpl extends ServiceImpl<UserFootMapper, UserFoot
      * @return
      */
     @Override
-    public List<Long> listReadArticleByUserId(Long userId, PageParam pageParam) {
-        return baseMapper.listReadArticleByUserId(userId, pageParam);
+    public Page<UserFootDO> listReadArticleByUserId(Long userId, PageParam pageParam) {
+         Page<UserFootDO> page = Page.of(pageParam.getPageNum(), pageParam.getPageSize());
+         LambdaQueryWrapper<UserFootDO> query = Wrappers.lambdaQuery();
+          query.eq(UserFootDO::getUserId, userId)
+                .eq(UserFootDO::getDocumentType, DocumentTypeEnum.ARTICLE.getCode())
+                  .eq(UserFootDO::getReadStat, ReadStatEnum.READ)
+                .orderByDesc(UserFootDO::getId);
+           return this.page(page, query);
     }
     /**
      * 查询用户收藏的文章列表
@@ -69,8 +78,14 @@ public class UserFootRepositoryImpl extends ServiceImpl<UserFootMapper, UserFoot
      * @return
      */
     @Override
-    public List<Long> listCollectedArticlesByUserId(Long userId, PageParam pageParam) {
-        return baseMapper.listCollectedArticlesByUserId(userId, pageParam);
+    public Page<UserFootDO> listCollectedArticlesByUserId(Long userId, PageParam pageParam) {
+         Page<UserFootDO> page = Page.of(pageParam.getPageNum(), pageParam.getPageSize());
+          LambdaQueryWrapper<UserFootDO> query = Wrappers.lambdaQuery();
+          query.eq(UserFootDO::getUserId, userId)
+                .eq(UserFootDO::getDocumentType, DocumentTypeEnum.ARTICLE.getCode())
+                .eq(UserFootDO::getCollectionStat, CollectionStatEnum.COLLECTION)
+                .orderByDesc(UserFootDO::getId);
+           return this.page(page, query);
     }
     @Override
     public UserFootStatisticDTO getFootCount() {

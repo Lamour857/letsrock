@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.wj.letsrock.domain.common.Collectable;
+import org.wj.letsrock.domain.common.Praiseable;
 import org.wj.letsrock.model.BaseDO;
 
 /**
@@ -35,6 +37,9 @@ public class CommentDO extends BaseDO implements Serializable {
 
     @ApiModelProperty(value = "评论内容")
     private String content;
+
+     @ApiModelProperty(value = "点赞数")
+     private Long praise;
 
     @ApiModelProperty(value = "顶级评论ID")
     private Long topCommentId;

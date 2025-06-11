@@ -1,5 +1,7 @@
 package org.wj.letsrock.infrastructure.persistence.mybatis.article;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
@@ -24,20 +26,20 @@ import java.util.List;
 @Repository
 public class CategoryRepositoryImpl extends ServiceImpl<CategoryMapper, CategoryDO> implements CategoryRepository {
     @Override
-    public List<CategoryDO> listAllCategoriesFromDb() {
+    public List<CategoryDO> listAllCategories() {
         return lambdaQuery()
                 .eq(CategoryDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .eq(CategoryDO::getStatus, PushStatusEnum.ONLINE.getCode())
                 .list();
     }
     @Override
-    public List<CategoryDTO> listCategory(SearchCategoryParams params) {List<CategoryDO> list = createCategoryQuery(params)
-            .orderByDesc(CategoryDO::getUpdateTime)
-            .orderByAsc(CategoryDO::getRank)
-            .last(PageParam.getLimitSql(
-                    PageParam.newPageInstance(params.getPageNum(), params.getPageSize())
-            ))
-            .list();
+    public List<CategoryDTO> listCategory(SearchCategoryParams params) {
+        LambdaQueryWrapper<CategoryDO> query = Wrappers.lambdaQuery();
+        query.eq(CategoryDO::getDeleted, YesOrNoEnum.NO.getCode());
+        query.eq(CategoryDO::getStatus, PushStatusEnum.ONLINE.getCode());
+        query.like(StringUtils.isNotBlank(params.getCategory()), CategoryDO::getCategoryName, params.getCategory());
+        query.orderByDesc(CategoryDO::getUpdateTime);
+        List<CategoryDO> list = baseMapper.selectList(query);
         return CategoryConverter.toDTOs(list);
 
     }

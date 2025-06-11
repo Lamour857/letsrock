@@ -7,6 +7,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 import org.wj.letsrock.domain.cache.CacheKey;
 import org.wj.letsrock.domain.cache.CacheService;
+import org.wj.letsrock.infrastructure.security.token.RolePermission;
 import org.wj.letsrock.utils.JsonUtil;
 import org.wj.letsrock.infrastructure.security.token.AuthenticationToken;
 import org.wj.letsrock.domain.user.model.entity.UserDO;
@@ -37,13 +39,13 @@ public class JwtService {
 
     @Autowired
     private CacheService cacheService;
-    @Autowired
-    private UserDetailsService userDetailsService;
+
 
     @Value("${jwt.secret}")
     private String secret;
 
     @Value("${jwt.expiration}")
+    @Getter
     private Long expiration;
     @Value("${jwt.issuer}")
     private String issuer;
@@ -67,8 +69,7 @@ public class JwtService {
         claims.put("userId", user.getId());
         //claims.put("roles", user.getRoles().getId());
         String token=createToken(claims);
-        // token缓存 key: token ->value: userDO
-        cacheService.put(CacheKey.tokenCacheKey(token), user, expiration,  TimeUnit.MILLISECONDS);
+
         return token;
     }
 
@@ -99,8 +100,9 @@ public class JwtService {
                 return null;
             }
             // 根据用户名读取用户信息
-            //userInRedis.setRoles(userDao.getUserRole(userInRedis.getRoleId()));
-            authenticationToken=new AuthenticationToken();
+            List<RolePermission> roles=new ArrayList<>();
+            roles.add(new RolePermission(userInRedis.get().getRole()));
+            authenticationToken=new AuthenticationToken(roles);
             authenticationToken.setAuthenticated(true);
             authenticationToken.setToken(token);
             authenticationToken.setUser(userInRedis.get());

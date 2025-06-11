@@ -105,6 +105,11 @@ public class ArticleWriteServiceImpl implements ArticleWriteService {
         }
     }
 
+    @Override
+    public void updateArticle(ArticleDO article) {
+         articleDao.updateById(article);
+    }
+
     /**
      * 新建文章
      *

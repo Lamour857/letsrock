@@ -2,6 +2,7 @@ package org.wj.letsrock.infrastructure.context;
 
 import lombok.Data;
 import lombok.ToString;
+import org.springframework.stereotype.Component;
 import org.wj.letsrock.domain.user.model.entity.UserDO;
 
 import java.security.Principal;
@@ -11,6 +12,7 @@ import java.security.Principal;
  * @description: TODO
  * @createTime: 2025-04-20-12:59
  **/
+@Component
 public class RequestInfoContext {
     private static ThreadLocal<ReqInfo> contexts = new ThreadLocal<>();
 
