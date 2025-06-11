@@ -26,21 +26,23 @@ import java.lang.reflect.Method;
 @Order(1)
 @Component
 public class RateLimitAspect {
-    
     @Autowired
-    private CacheService cacheService;
+    private SlidingWindowRateLimiter rateLimiter;
     
+    // 添加 ExpressionParser 实例
     private final ExpressionParser parser = new SpelExpressionParser();
-
+    
     @Around("@annotation(rateLimit)")
     public Object around(ProceedingJoinPoint point, RateLimit rateLimit) throws Throwable {
         String key = generateKey(point, rateLimit);
         
-        // 尝试获取限流令牌
-        if (!tryAcquireToken(key, rateLimit)) {
+        // 使用滑动窗口限流器
+        if (!rateLimiter.tryAcquire(key, 
+                rateLimit.limit(), 
+                rateLimit.period(), 
+                rateLimit.timeUnit())) {
             throw ExceptionUtil.of(StatusEnum.TOO_MANY_REQUESTS);
         }
-        
         return point.proceed();
     }
     
@@ -61,34 +63,22 @@ public class RateLimitAspect {
     }
     
     private String parseSpEl(ProceedingJoinPoint point, String spEl) {
-        MethodSignature signature = (MethodSignature) point.getSignature();
-        Method method = signature.getMethod();
-        String[] paramNames = signature.getParameterNames();
-        Object[] args = point.getArgs();
-        
-        EvaluationContext context = new StandardEvaluationContext();
+        try {
+            MethodSignature signature = (MethodSignature) point.getSignature();
+            String[] paramNames = signature.getParameterNames();
+            Object[] args = point.getArgs();
+            
+            EvaluationContext context = new StandardEvaluationContext();
 
-        for (int i = 0; i < paramNames.length; i++) {
-            context.setVariable(paramNames[i], args[i]);
+            for (int i = 0; i < paramNames.length; i++) {
+                context.setVariable(paramNames[i], args[i]);
+            }
+            
+            Expression expression = parser.parseExpression(spEl);
+            return String.valueOf(expression.getValue(context));
+        } catch (Exception e) {
+            log.error("Failed to parse SpEL expression: {}", spEl, e);
+            return spEl; // 解析失败时返回原始表达式
         }
-        
-        Expression expression = parser.parseExpression(spEl);
-        return String.valueOf(expression.getValue(context));
-    }
-    
-    private boolean tryAcquireToken(String key, RateLimit rateLimit) {
-        String countKey = key + ":count";
-
-        if(!EnvironmentUtil.isPro()){
-            log.info(countKey);
-        }
-        
-        Long count = cacheService.increment(countKey, 1L);
-        if (count == 1) {
-            // 设置过期时间
-            cacheService.expire(countKey, rateLimit.period(), rateLimit.timeUnit());
-        }
-        
-        return count <= rateLimit.limit();
     }
 }

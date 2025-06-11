@@ -46,11 +46,22 @@ public class SearchController extends BaseController {
      */
     @GetMapping(path = "list")
     @AnonymousAccess
-    public ResultVo<PageResultVo<ArticleDTO>> searchList(@RequestParam(name = "key", required = false) String key,
-                                                    @RequestParam(name = "page") Long page,
-                                                    @RequestParam(name = "size", required = false) Long size) {
+    public ResultVo<PageResultVo<ArticleDTO>> searchList(
+            @RequestParam(name = "key", required = false) String key,
+            @RequestParam(name = "page") Long page,
+            @RequestParam(name = "size", required = false) Long size) {
         PageParam pageParam = buildPageParam(page, size);
         PageResultVo<ArticleDTO> list = articleService.queryArticlesBySearchKey(key, pageParam);
         return ResultVo.ok(list);
+    }
+
+    @GetMapping(path = "hot")
+    @AnonymousAccess
+    public ResultVo<PageListVo<SimpleArticleDTO>> hotList(
+            @RequestParam(name = "page", required = false) Long page,
+            @RequestParam(name = "size", required = false) Long size){
+       // PageParam pageParam = buildPageParam(page, size);
+        // todo 获取最热文章
+        return ResultVo.ok(null);
     }
 }
