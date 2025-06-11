@@ -20,11 +20,13 @@ import java.util.concurrent.TimeUnit;
 public class SlidingWindowRateLimiter {
     private final StringRedisTemplate redisTemplate;
     private final RedisScript<Long> rateLimitScript;
+    private final LocalRateLimiter localRateLimiter;
 
     @Autowired
-    public SlidingWindowRateLimiter(StringRedisTemplate redisTemplate) {
+    public SlidingWindowRateLimiter(StringRedisTemplate redisTemplate, LocalRateLimiter localRateLimiter) {
         this.redisTemplate = redisTemplate;
         this.rateLimitScript = RedisScript.of(RateLimitLuaScript.SLIDING_WINDOW_SCRIPT, Long.class);
+        this.localRateLimiter = localRateLimiter;
     }
 
     public boolean tryAcquire(String key, int limit, int windowSize, TimeUnit unit) {
@@ -44,8 +46,8 @@ public class SlidingWindowRateLimiter {
             
             return result != null && result == 1;
         } catch (Exception e) {
-            log.error("Rate limit error for key: {}", key, e);
-            return false; // 发生异常时,降级处理允许请求通过
+            log.warn("Redis rate limit failed, fallback to local rate limit. Key: {}", key, e);
+            return localRateLimiter.tryAcquire(key, limit, windowSize, unit);
         }
     }
 }
